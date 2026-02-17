@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANAC/GB VIP</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+
+body{
+background:#000;
+color:#fff;
+overflow-x:hidden;
+}
+
+/* FUNDO ANIMADO */
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
+background-size:60px 60px;
+animation:move 20s linear infinite;
+z-index:-1;
+}
+
+@keyframes move{
+from{transform:translate(0,0);}
+to{transform:translate(-200px,-200px);}
+}
+
+/* LOGIN */
+#login{
+position:fixed;
+width:100%;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#000;
+z-index:1000;
+}
+
+.login-box{
+background:#0d0d0d;
+padding:40px;
+border-radius:20px;
+border:1px solid #c9a227;
+box-shadow:0 0 30px #c9a22755;
+text-align:center;
+width:320px;
+animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:scale(0.9);}
+to{opacity:1;transform:scale(1);}
+}
+
+.login-box h2{
+margin-bottom:25px;
+color:#c9a227;
+letter-spacing:4px;
+}
+
+.login-box input{
+width:100%;
+padding:14px;
+margin-bottom:20px;
+border:none;
+border-radius:10px;
+background:#1a1a1a;
+color:#fff;
+}
+
+.login-box button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#c9a227;
+color:#000;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* PAINEL */
+#painel{
+display:none;
+padding:20px;
+animation:fadeIn 1s ease;
+}
+
+.topo{
+text-align:center;
+margin-bottom:25px;
+}
+
+.topo h1{
+color:#c9a227;
+letter-spacing:6px;
+margin-bottom:15px;
+}
+
+.topo button{
+padding:10px 25px;
+margin:5px;
+border:1px solid #c9a227;
+border-radius:12px;
+background:#111;
+color:#c9a227;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.topo button:hover{
+background:#c9a227;
+color:#000;
+transform:scale(1.05);
+}
+
+#timer{
+margin-top:10px;
+color:#aaa;
+font-size:13px;
+}
+
+/* OPORTUNIDADE */
+#oportunidade{
+display:none;
+margin:20px auto;
+background:#111;
+padding:20px;
+border-radius:15px;
+border:1px solid #c9a227;
+width:300px;
+font-size:14px;
+line-height:1.6;
+animation:pop 0.5s ease;
+}
+
+@keyframes pop{
+from{transform:scale(0.8);opacity:0;}
+to{transform:scale(1);opacity:1;}
+}
+
+/* IFRAME */
+.frame-area{
+margin-top:30px;
+padding:15px;
+border-radius:20px;
+background:#0d0d0d;
+border:1px solid #c9a227;
+}
+
+iframe{
+width:100%;
+height:650px;
+border-radius:15px;
+border:1px solid #c9a227;
+background:#000;
+}
+</style>
+</head>
+
+<body>
+
+<div id="login">
+<div class="login-box">
+<h2>ANAC/GB VIP</h2>
+<input type="password" id="senha" placeholder="Digite a senha">
+<button onclick="entrar()">ENTRAR</button>
+</div>
+</div>
+
+<div id="painel">
+
+<div class="topo">
+<h1>ANAC/GB</h1>
+<button onclick="gerar('Tigre')">GERAR TIGRE</button>
+<button onclick="gerar('Touro')">GERAR TOURO</button>
+<div id="timer"></div>
+</div>
+
+<div id="oportunidade"></div>
+
+<div class="frame-area">
+<iframe src="https://51graus.vip/?id=655031265"></iframe>
+</div>
+
+</div>
+
+<script>
+
+let bloqueado=false;
+let tempoRestante=0;
+let intervalo;
+
+function entrar(){
+if(document.getElementById("senha").value==="ANA/GB/2026"){
+document.getElementById("login").style.display="none";
+document.getElementById("painel").style.display="block";
+}else{
+alert("Senha incorreta");
+}
+}
+
+function gerar(jogo){
+
+if(bloqueado){
+alert("Aguarde o tempo acabar.");
+return;
+}
+
+let op=document.getElementById("oportunidade");
+
+/* BETS CORRETAS */
+let bet;
+if(jogo==="Tigre"){
+bet = Math.random() < 0.5 ? 0.40 : 0.80;
+}else{
+bet = Math.random() < 0.5 ? 0.50 : 1.00;
+}
+
+let normal=Math.floor(Math.random()*10)+1;
+let turbo=Math.floor(Math.random()*10)+1;
+let minutos=Math.floor(Math.random()*2)+1;
+
+op.innerHTML=`
+<b>✅ OPORTUNIDADE GERADA!</b><br><br>
+🦁 ${jogo} 🦁<br>
+⏰ Válido por: ${minutos} minuto(s)<br>
+💰 Bet: R$ ${bet.toFixed(2)}<br>
+👉 ${normal}x Normal<br>
+⚡ ${turbo}x Turbo
+`;
+
+op.style.display="block";
+
+bloqueado=true;
+tempoRestante=minutos*60;
+
+intervalo=setInterval(()=>{
+tempoRestante--;
+document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
+if(tempoRestante<=0){
+clearInterval(intervalo);
+bloqueado=false;
+document.getElementById("timer").innerText="";
+op.style.display="none";
+}
+},1000);
+
+}
+
+</script>
+
+</body>
+</html>
