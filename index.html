@@ -14,7 +14,6 @@ color:#fff;
 overflow-x:hidden;
 }
 
-/* FUNDO ANIMADO */
 body::before{
 content:"";
 position:fixed;
@@ -51,12 +50,6 @@ border:1px solid #c9a227;
 box-shadow:0 0 30px #c9a22755;
 text-align:center;
 width:320px;
-animation:fadeIn 1s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:scale(0.9);}
-to{opacity:1;transform:scale(1);}
 }
 
 .login-box h2{
@@ -90,7 +83,6 @@ cursor:pointer;
 #painel{
 display:none;
 padding:20px;
-animation:fadeIn 1s ease;
 }
 
 .topo{
@@ -113,13 +105,6 @@ background:#111;
 color:#c9a227;
 font-weight:bold;
 cursor:pointer;
-transition:0.3s;
-}
-
-.topo button:hover{
-background:#c9a227;
-color:#000;
-transform:scale(1.05);
 }
 
 #timer{
@@ -138,13 +123,95 @@ border-radius:15px;
 border:1px solid #c9a227;
 width:300px;
 font-size:14px;
-line-height:1.6;
-animation:pop 0.5s ease;
 }
 
-@keyframes pop{
-from{transform:scale(0.8);opacity:0;}
-to{transform:scale(1);opacity:1;}
+/* AVIATOR VISUAL */
+#aviatorVisual{
+display:none;
+text-align:center;
+margin-top:20px;
+}
+
+.aviator-box{
+background:#fff;
+padding:30px;
+border-radius:20px;
+max-width:320px;
+margin:0 auto;
+position:relative;
+overflow:hidden;
+}
+
+/* Aviões animados */
+.plane{
+position:absolute;
+font-size:22px;
+color:#ff5722;
+animation:fly 6s linear infinite;
+opacity:0.2;
+}
+
+.plane:nth-child(1){
+top:20%;
+animation-duration:7s;
+}
+
+.plane:nth-child(2){
+top:50%;
+animation-duration:9s;
+}
+
+.plane:nth-child(3){
+top:75%;
+animation-duration:6s;
+}
+
+@keyframes fly{
+from{left:-50px;}
+to{left:110%;}
+}
+
+.aviator-title{
+background:#e53935;
+color:#fff;
+padding:12px;
+border-radius:10px;
+font-weight:bold;
+margin-bottom:25px;
+position:relative;
+z-index:2;
+}
+
+.circle{
+width:180px;
+height:180px;
+border-radius:50%;
+border:4px solid #ff7043;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:0 auto;
+font-size:28px;
+font-weight:bold;
+color:#e53935;
+animation:pulse 1.5s infinite;
+position:relative;
+z-index:2;
+background:#fff;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+}
+
+.info-text{
+margin-top:15px;
+font-size:13px;
+color:#555;
+position:relative;
+z-index:2;
 }
 
 /* IFRAME */
@@ -182,10 +249,32 @@ background:#000;
 <h1>ANAC/GB</h1>
 <button onclick="gerar('Tigre')">GERAR TIGRE</button>
 <button onclick="gerar('Touro')">GERAR TOURO</button>
+<button onclick="gerar('Aviator')">GERAR AVIATOR</button>
 <div id="timer"></div>
 </div>
 
 <div id="oportunidade"></div>
+
+<div id="aviatorVisual">
+  <div class="aviator-box">
+
+    <!-- Aviões fundo -->
+    <div class="plane">✈️</div>
+    <div class="plane">✈️</div>
+    <div class="plane">✈️</div>
+
+    <div class="aviator-title">AVIATOR</div>
+
+    <div class="circle">
+      <span id="multiplicador">1.00X</span>
+    </div>
+
+    <div class="info-text">
+      no máximo 1 até 3 vezes pra fazer tentativa!
+    </div>
+
+  </div>
+</div>
 
 <div class="frame-area">
 <iframe src="https://51graus.vip/?id=655031265"></iframe>
@@ -198,6 +287,7 @@ background:#000;
 let bloqueado=false;
 let tempoRestante=0;
 let intervalo;
+let animacaoMulti;
 
 function entrar(){
 if(document.getElementById("senha").value==="ANA/GB/2026"){
@@ -208,12 +298,55 @@ alert("Senha incorreta");
 }
 }
 
-function gerar(jogo){
+function iniciarTimer(minutos){
+bloqueado=true;
+tempoRestante=minutos*60;
+clearInterval(intervalo);
+intervalo=setInterval(()=>{
+tempoRestante--;
+document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
+if(tempoRestante<=0){
+clearInterval(intervalo);
+bloqueado=false;
+document.getElementById("timer").innerText="";
+}
+},1000);
+}
 
+function gerar(jogo){
 if(bloqueado){
 alert("Aguarde o tempo acabar.");
 return;
 }
+
+document.getElementById("oportunidade").style.display="none";
+document.getElementById("aviatorVisual").style.display="none";
+
+let minutos=Math.floor(Math.random()*2)+1;
+
+if(jogo==="Aviator"){
+
+document.getElementById("aviatorVisual").style.display="block";
+
+let multi=1.00;
+let limite=(Math.random()*5.45 + 1).toFixed(2);
+
+clearInterval(animacaoMulti);
+
+animacaoMulti=setInterval(()=>{
+multi+=0.05;
+document.getElementById("multiplicador").innerText=multi.toFixed(2)+"X";
+if(multi>=limite){
+clearInterval(animacaoMulti);
+}
+},100);
+
+iniciarTimer(minutos);
+
+}
+
+// ✅ TIGRE E TOURO COM O MESMO TEXTO ORIGINAL
+if((jogo==="Tigre" || jogo==="Touro") && !bloqueado){
 
 let op=document.getElementById("oportunidade");
 
@@ -227,7 +360,6 @@ bet = Math.random() < 0.5 ? 0.50 : 1.00;
 
 let normal=Math.floor(Math.random()*10)+1;
 let turbo=Math.floor(Math.random()*10)+1;
-let minutos=Math.floor(Math.random()*2)+1;
 
 op.innerHTML=`
 <b>✅ OPORTUNIDADE GERADA!</b><br><br>
@@ -240,19 +372,9 @@ op.innerHTML=`
 
 op.style.display="block";
 
-bloqueado=true;
-tempoRestante=minutos*60;
+iniciarTimer(minutos);
 
-intervalo=setInterval(()=>{
-tempoRestante--;
-document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
-if(tempoRestante<=0){
-clearInterval(intervalo);
-bloqueado=false;
-document.getElementById("timer").innerText="";
-op.style.display="none";
 }
-},1000);
 
 }
 
