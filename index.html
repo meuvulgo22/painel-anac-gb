@@ -30,7 +30,6 @@ from{transform:translate(0,0);}
 to{transform:translate(-200px,-200px);}
 }
 
-/* LOGIN */
 #login{
 position:fixed;
 width:100%;
@@ -79,7 +78,6 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* PAINEL */
 #painel{
 display:none;
 padding:20px;
@@ -113,7 +111,6 @@ color:#aaa;
 font-size:13px;
 }
 
-/* OPORTUNIDADE */
 #oportunidade{
 display:none;
 margin:20px auto;
@@ -125,7 +122,28 @@ width:300px;
 font-size:14px;
 }
 
-/* AVIATOR VISUAL */
+/* AVALIAÇÃO */
+#avaliacao{
+display:none;
+text-align:center;
+margin-top:15px;
+}
+
+.av-btn{
+padding:10px 20px;
+margin:5px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.green{background:#2e7d32;color:#fff;}
+.red{background:#c62828;color:#fff;}
+
+#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
+#tipoEnviado{margin-top:5px;font-size:13px;}
+
 #aviatorVisual{
 display:none;
 text-align:center;
@@ -142,7 +160,6 @@ position:relative;
 overflow:hidden;
 }
 
-/* Aviões animados */
 .plane{
 position:absolute;
 font-size:22px;
@@ -151,20 +168,9 @@ animation:fly 6s linear infinite;
 opacity:0.2;
 }
 
-.plane:nth-child(1){
-top:20%;
-animation-duration:7s;
-}
-
-.plane:nth-child(2){
-top:50%;
-animation-duration:9s;
-}
-
-.plane:nth-child(3){
-top:75%;
-animation-duration:6s;
-}
+.plane:nth-child(1){top:20%;animation-duration:7s;}
+.plane:nth-child(2){top:50%;animation-duration:9s;}
+.plane:nth-child(3){top:75%;animation-duration:6s;}
 
 @keyframes fly{
 from{left:-50px;}
@@ -214,7 +220,6 @@ position:relative;
 z-index:2;
 }
 
-/* IFRAME */
 .frame-area{
 margin-top:30px;
 padding:15px;
@@ -255,25 +260,27 @@ background:#000;
 
 <div id="oportunidade"></div>
 
+<!-- AVALIAÇÃO ADICIONADA -->
+<div id="avaliacao">
+<button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
+<button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
+<div id="resultadoAvaliacao"></div>
+<div id="tipoEnviado"></div>
+</div>
+
 <div id="aviatorVisual">
-  <div class="aviator-box">
-
-    <!-- Aviões fundo -->
-    <div class="plane">✈️</div>
-    <div class="plane">✈️</div>
-    <div class="plane">✈️</div>
-
-    <div class="aviator-title">AVIATOR</div>
-
-    <div class="circle">
-      <span id="multiplicador">1.00X</span>
-    </div>
-
-    <div class="info-text">
-      no máximo 1 até 3 vezes pra fazer tentativa!
-    </div>
-
-  </div>
+<div class="aviator-box">
+<div class="plane">✈️</div>
+<div class="plane">✈️</div>
+<div class="plane">✈️</div>
+<div class="aviator-title">AVIATOR</div>
+<div class="circle">
+<span id="multiplicador">1.00X</span>
+</div>
+<div class="info-text">
+no máximo 1 até 3 vezes pra fazer tentativa!
+</div>
+</div>
 </div>
 
 <div class="frame-area">
@@ -288,6 +295,7 @@ let bloqueado=false;
 let tempoRestante=0;
 let intervalo;
 let animacaoMulti;
+let avaliacaoFeita=false;
 
 function entrar(){
 if(document.getElementById("senha").value==="ANA/GB/2026"){
@@ -308,31 +316,38 @@ document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestant
 if(tempoRestante<=0){
 clearInterval(intervalo);
 bloqueado=false;
+avaliacaoFeita=false;
+document.getElementById("resultadoAvaliacao").innerText="";
+document.getElementById("tipoEnviado").innerText="";
+document.getElementById("btnGreen").disabled=false;
+document.getElementById("btnRed").disabled=false;
 document.getElementById("timer").innerText="";
 }
 },1000);
 }
 
 function gerar(jogo){
+
 if(bloqueado){
 alert("Aguarde o tempo acabar.");
 return;
 }
 
-document.getElementById("oportunidade").style.display="none";
-document.getElementById("aviatorVisual").style.display="none";
+document.getElementById("avaliacao").style.display="block";
+document.getElementById("resultadoAvaliacao").innerText="";
+document.getElementById("tipoEnviado").innerText="";
+avaliacaoFeita=false;
+document.getElementById("btnGreen").disabled=false;
+document.getElementById("btnRed").disabled=false;
 
 let minutos=Math.floor(Math.random()*2)+1;
 
 if(jogo==="Aviator"){
-
 document.getElementById("aviatorVisual").style.display="block";
 
 let multi=1.00;
 let limite=(Math.random()*5.45 + 1).toFixed(2);
-
 clearInterval(animacaoMulti);
-
 animacaoMulti=setInterval(()=>{
 multi+=0.05;
 document.getElementById("multiplicador").innerText=multi.toFixed(2)+"X";
@@ -342,15 +357,11 @@ clearInterval(animacaoMulti);
 },100);
 
 iniciarTimer(minutos);
-
 }
 
-// ✅ TIGRE E TOURO COM O MESMO TEXTO ORIGINAL
-if((jogo==="Tigre" || jogo==="Touro") && !bloqueado){
-
+if((jogo==="Tigre" || jogo==="Touro")){
 let op=document.getElementById("oportunidade");
 
-/* BETS CORRETAS */
 let bet;
 if(jogo==="Tigre"){
 bet = Math.random() < 0.5 ? 0.40 : 0.80;
@@ -371,11 +382,21 @@ op.innerHTML=`
 `;
 
 op.style.display="block";
-
 iniciarTimer(minutos);
+}
 
 }
 
+function marcar(tipo){
+if(avaliacaoFeita) return;
+
+avaliacaoFeita=true;
+
+document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
+document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
+
+document.getElementById("btnGreen").disabled=true;
+document.getElementById("btnRed").disabled=true;
 }
 
 </script>
