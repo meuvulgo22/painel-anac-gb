@@ -1,331 +1,123 @@
-/* =========================================
-   ANAC/GB VIP - CSS ULTRA STYLISH HEAVY
-   Peso: +1MB, animações, gradientes, efeitos
-========================================= */
+/* RESET E FONTE */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 
-/* Reset global */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
-  transition: all 0.3s ease-in-out;
+/* BODY CENTRALIZADO */
+body{
+  background:#0d0d0d;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
 }
 
-body {
-  background: radial-gradient(circle at 50% 50%, #000 0%, #111 70%);
-  color: #fff;
-  overflow-x: hidden;
-  perspective: 1000px;
+/* ANIMAÇÃO DE FUNDO */
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
+  background-size:60px 60px;
+  animation:move 20s linear infinite;
+  z-index:-1;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  width: 300%;
-  height: 300%;
-  background: repeating-conic-gradient(
-      from 0deg,
-      #c9a22722 0deg 5deg,
-      transparent 5deg 10deg
-  );
-  animation: rotateBG 30s linear infinite;
-  z-index: -1;
-  opacity: 0.6;
+@keyframes move{
+  from{transform:translate(0,0);}
+  to{transform:translate(-200px,-200px);}
 }
 
-@keyframes rotateBG {
-  from { transform: rotate(0deg) translateZ(0); }
-  to { transform: rotate(360deg) translateZ(0); }
+/* LOGIN E CADASTRO */
+.login-box, .cadastro-box{
+  background:#111;
+  padding:40px;
+  border-radius:20px;
+  border:2px solid #c9a227;
+  width:360px;
+  text-align:center;
+  box-shadow: 0 0 30px #c9a22744;
+  animation:fadeIn 1.2s ease forwards;
 }
 
-/* LOGIN e CADASTRO */
-.login-box, .cadastro-box {
-  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
-  padding: 50px;
-  border-radius: 25px;
-  border: 2px solid #c9a227;
-  box-shadow: 0 0 50px #c9a22788, 0 0 100px #c9a22744 inset;
-  text-align: center;
-  width: 360px;
-  animation: pulseBox 2s infinite alternate;
+.login-box h2, .cadastro-box h2{
+  color:#c9a227;
+  margin-bottom:25px;
+  letter-spacing:2px;
 }
 
-@keyframes pulseBox {
-  0% { transform: scale(1) rotateX(0deg) rotateY(0deg); box-shadow: 0 0 50px #c9a22788, 0 0 100px #c9a22744 inset; }
-  50% { transform: scale(1.02) rotateX(3deg) rotateY(3deg); box-shadow: 0 0 80px #c9a227aa, 0 0 150px #c9a22755 inset; }
-  100% { transform: scale(1) rotateX(0deg) rotateY(0deg); box-shadow: 0 0 50px #c9a22788, 0 0 100px #c9a22744 inset; }
+.login-box input, .cadastro-box input{
+  width:100%;
+  padding:14px;
+  margin-bottom:20px;
+  border:none;
+  border-radius:10px;
+  background:#1a1a1a;
+  color:#fff;
+  transition:0.3s;
+}
+.login-box input:focus, .cadastro-box input:focus{
+  border:1px solid #c9a227;
+  outline:none;
 }
 
-.login-box h2, .cadastro-box h2 {
-  margin-bottom: 30px;
-  color: #c9a227;
-  letter-spacing: 5px;
-  text-shadow: 0 0 10px #c9a227aa, 0 0 20px #c9a22755;
-  animation: glowText 2s ease-in-out infinite alternate;
+/* BOTOES */
+.login-box button, .cadastro-box button, .topo button, .av-btn{
+  cursor:pointer;
+  font-weight:bold;
+  border-radius:10px;
+  transition:0.3s;
 }
-
-@keyframes glowText {
-  0% { text-shadow: 0 0 10px #c9a227aa, 0 0 20px #c9a22755; }
-  50% { text-shadow: 0 0 30px #ffe700cc, 0 0 60px #ffe70088; }
-  100% { text-shadow: 0 0 10px #c9a227aa, 0 0 20px #c9a22755; }
+.login-box button, .cadastro-box button{
+  width:100%;
+  padding:14px;
+  border:none;
+  background:#c9a227;
+  color:#000;
 }
-
-.login-box input, .cadastro-box input {
-  width: 100%;
-  padding: 16px;
-  margin-bottom: 25px;
-  border: none;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #1a1a1a, #222);
-  color: #fff;
-  box-shadow: 0 0 20px #000 inset;
-  font-size: 16px;
-}
-
-.login-box input:focus, .cadastro-box input:focus {
-  outline: none;
-  box-shadow: 0 0 15px #c9a227, 0 0 30px #c9a227 inset;
-  transform: scale(1.02);
-}
-
-.login-box button, .cadastro-box button {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #c9a227, #ffe700);
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 20px #c9a227aa, 0 0 40px #ffe70055 inset;
-  transition: 0.3s ease-in-out;
-}
-
-.login-box button:hover, .cadastro-box button:hover {
-  transform: scale(1.05) rotateZ(1deg);
-  box-shadow: 0 0 50px #c9a227ff, 0 0 80px #ffe700aa inset;
+.login-box button:hover, .cadastro-box button:hover{
+  background:#ffdc4d;
 }
 
 /* PAINEL PRINCIPAL */
-#painel {
-  padding: 30px;
-  background: radial-gradient(circle, #111, #000);
-  border-radius: 25px;
-  margin: 50px auto;
-  width: 90%;
-  max-width: 1200px;
-  box-shadow: 0 0 50px #c9a22788, 0 0 100px #000 inset;
-  animation: pulsePanel 3s infinite alternate;
-}
+#painel, #painelADM{padding:20px;}
+.topo{text-align:center;margin-bottom:25px;}
+.topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
+.topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;background:#111;color:#c9a227;border-radius:12px;}
+.topo button:hover{background:#222;}
 
-@keyframes pulsePanel {
-  0% { transform: scale(1); box-shadow: 0 0 50px #c9a22788, 0 0 100px #000 inset; }
-  50% { transform: scale(1.01); box-shadow: 0 0 100px #c9a227aa, 0 0 150px #000 inset; }
-  100% { transform: scale(1); box-shadow: 0 0 50px #c9a22788, 0 0 100px #000 inset; }
-}
+/* TIMER E OPORTUNIDADE */
+#timer{margin-top:10px;color:#aaa;font-size:13px;}
+#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:320px;font-size:14px;box-shadow:0 0 20px #c9a22744; animation:fadeIn 0.8s ease;}
 
-.topo h1 {
-  color: #c9a227;
-  letter-spacing: 6px;
-  text-shadow: 0 0 10px #c9a227aa, 0 0 20px #ffe70055;
-}
+/* AVALIACAO */
+#avaliacao{display:none;text-align:center;margin-top:15px;}
+.green{background:#2e7d32;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
+.green:hover{background:#4caf50;}
+.red{background:#c62828;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
+.red:hover{background:#e53935;}
 
-.topo button {
-  padding: 12px 30px;
-  margin: 8px;
-  border: 2px solid #c9a227;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #111, #222);
-  color: #c9a227;
-  font-weight: bold;
-  box-shadow: 0 0 20px #c9a22788;
-  transition: 0.3s ease-in-out;
-}
-
-.topo button:hover {
-  transform: scale(1.1) rotateY(5deg);
-  box-shadow: 0 0 50px #ffe700aa, 0 0 80px #c9a227ff inset;
-}
-
-/* OPORTUNIDADES */
-#oportunidade {
-  display: none;
-  margin: 25px auto;
-  padding: 25px;
-  border-radius: 20px;
-  width: 350px;
-  background: linear-gradient(135deg, #111, #222);
-  border: 2px solid #c9a227;
-  box-shadow: 0 0 50px #c9a22788, 0 0 100px #000 inset;
-  animation: pulseBox 2s infinite alternate;
-}
-
-/* AVALIAÇÃO */
-#avaliacao {
-  display: none;
-  text-align: center;
-  margin-top: 25px;
-}
-
-.av-btn {
-  padding: 12px 30px;
-  margin: 10px;
-  border-radius: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 30px #000 inset;
-  transition: 0.3s ease-in-out;
-}
-
-.green {
-  background: linear-gradient(135deg, #2e7d32, #4caf50);
-  color: #fff;
-}
-
-.red {
-  background: linear-gradient(135deg, #c62828, #f44336);
-  color: #fff;
-}
-
-.green:hover, .red:hover {
-  transform: scale(1.1) rotateZ(2deg);
-  box-shadow: 0 0 50px #c9a227ff;
-}
+#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
+#tipoEnviado{margin-top:5px;font-size:13px;}
+#contadorGlobal{margin-top:10px;font-size:14px;color:#c9a227;}
 
 /* AVIATOR */
-#aviatorVisual {
-  display: none;
-  text-align: center;
-  margin-top: 30px;
-}
+#aviatorVisual{display:none;text-align:center;margin-top:20px;}
+.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
+.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
+.plane:nth-child(1){top:20%;animation-duration:7s;}
+.plane:nth-child(2){top:50%;animation-duration:9s;}
+.plane:nth-child(3){top:75%;animation-duration:6s;}
+@keyframes fly{from{left:-50px;}to{left:110%;}}
+.aviator-title{background:#e53935;color:#fff;padding:12px;border-radius:10px;font-weight:bold;margin-bottom:25px;position:relative;z-index:2;}
+.circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
+@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
+.info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
 
-.aviator-box {
-  background: linear-gradient(145deg, #fff, #ffe);
-  padding: 35px;
-  border-radius: 25px;
-  max-width: 360px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 50px #ff5722aa, 0 0 100px #ff5722 inset;
-  animation: rotateBox 4s infinite alternate;
-}
+/* IFRAME */
+.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
+iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}
 
-@keyframes rotateBox {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(2deg); }
-  100% { transform: rotate(0deg); }
-}
-
-.plane {
-  position: absolute;
-  font-size: 26px;
-  color: #ff5722;
-  animation: fly 6s linear infinite;
-  opacity: 0.3;
-}
-
-.plane:nth-child(1) { top: 15%; animation-duration: 7s; }
-.plane:nth-child(2) { top: 50%; animation-duration: 9s; }
-.plane:nth-child(3) { top: 80%; animation-duration: 6s; }
-
-@keyframes fly {
-  from { left: -50px; }
-  to { left: 110%; }
-}
-
-.aviator-title {
-  background: linear-gradient(135deg, #e53935, #ff1744);
-  color: #fff;
-  padding: 15px;
-  border-radius: 15px;
-  font-weight: bold;
-  margin-bottom: 25px;
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 0 10px #000;
-}
-
-.circle {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 5px solid #ff7043;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  font-size: 32px;
-  font-weight: bold;
-  color: #e53935;
-  animation: pulseCircle 1.2s infinite;
-  background: #fff;
-}
-
-@keyframes pulseCircle {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-  100% { transform: scale(1); }
-}
-
-/* FRAME */
-.frame-area {
-  margin-top: 35px;
-  padding: 25px;
-  border-radius: 25px;
-  background: linear-gradient(145deg, #0d0d0d, #111);
-  border: 2px solid #c9a227;
-  box-shadow: 0 0 50px #c9a22788 inset, 0 0 30px #000 inset;
-}
-
-iframe {
-  width: 100%;
-  height: 700px;
-  border-radius: 20px;
-  border: 2px solid #c9a227;
-  background: #000;
-  box-shadow: 0 0 30px #c9a22755 inset;
-}
-
-/* BOTÕES ADM NÃO ADMIN */
-#admUserMessage p {
-  color: #f44336;
-  font-weight: bold;
-  text-shadow: 0 0 10px #ff0000;
-}
-
-/* PAINEL ADM */
-#painelADM {
-  padding: 30px;
-  background: linear-gradient(145deg, #111, #222);
-  border-radius: 25px;
-  margin: 50px auto;
-  max-width: 1000px;
-  box-shadow: 0 0 50px #c9a22788, 0 0 100px #000 inset;
-  animation: glowPanel 3s infinite alternate;
-}
-
-@keyframes glowPanel {
-  0% { box-shadow: 0 0 50px #c9a22788; }
-  50% { box-shadow: 0 0 100px #ffe700aa; }
-  100% { box-shadow: 0 0 50px #c9a22788; }
-}
-
-#listaUsuarios div {
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #111, #222);
-  border: 2px solid #c9a227;
-  box-shadow: 0 0 50px #c9a22788 inset;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s ease-in-out;
-}
-
-#listaUsuarios div:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 80px #c9a227ff inset;
-}
+/* ANIMAÇÕES GERAIS */
+@keyframes fadeIn{0%{opacity:0;transform:translateY(-20px);}100%{opacity:1;transform:translateY(0);}}
