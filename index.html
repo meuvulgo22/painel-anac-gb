@@ -14,54 +14,39 @@
     <input type="email" id="email" placeholder="Digite seu email">
     <input type="password" id="senha" placeholder="Digite a senha">
     <button onclick="entrar()">ENTRAR</button>
-    <button onclick="registrar()">REGISTRAR</button>
   </div>
 </div>
 
 <div id="painel">
   <div class="topo">
     <h1>ANAC/GB</h1>
-    <div id="buttonsGerar">
-      <button onclick="gerar('Tigre')">GERAR TIGRE</button>
-      <button onclick="gerar('Touro')">GERAR TOURO</button>
-      <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    <div class="adm-btns" id="admBtns" style="display:none;">
+      <button onclick="abrirADM()">PAINEL ADM</button>
     </div>
     <div id="timer"></div>
   </div>
 
-  <div id="oportunidade"></div>
-
-  <!-- Green / Red -->
   <div id="avaliacao">
-    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">GREEN ✅</button>
-    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">RED ❌</button>
+    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
+    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
     <div id="resultadoAvaliacao"></div>
     <div id="tipoEnviado"></div>
   </div>
 
-  <!-- Aviator -->
-  <div id="aviatorVisual">
-    <div class="aviator-box">
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="aviator-title">AVIATOR</div>
-      <div class="circle"><span id="multiplicador">1.00X</span></div>
-      <div class="info-text">No máximo 1 até 3 tentativas!</div>
-    </div>
-  </div>
-
-  <!-- Iframe -->
   <div class="frame-area">
     <iframe src="https://51graus.vip/?id=655031265"></iframe>
   </div>
 
-  <!-- Painel ADM -->
-  <div id="painelADM" style="display:none;">
-    <h2>PAINEL ADM</h2>
-    <div id="listaUsuarios"></div>
-    <input type="email" id="novoADM" placeholder="Escolher ADM">
-    <button onclick="tornarADM()">Definir ADM</button>
+  <div id="admPanel" style="display:none;">
+    <h2>PAINEL ADMINISTRATIVO</h2>
+    <table id="usuariosTable">
+      <tr>
+        <th>Email</th>
+        <th>Senha</th>
+        <th>ADM</th>
+        <th>Ações</th>
+      </tr>
+    </table>
   </div>
 </div>
 
