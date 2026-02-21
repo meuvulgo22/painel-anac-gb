@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updatePassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // CONFIG FIREBASE
 const firebaseConfig = {
@@ -14,143 +14,83 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const refGlobal = doc(db, "historico", "global");
+const refUsers = collection(db, "users");
 
-// LOGIN / CADASTRO
-function mostrarCadastro() {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("cadastro").style.display = "flex";
-}
-function mostrarLogin() {
-  document.getElementById("cadastro").style.display = "none";
-  document.getElementById("login").style.display = "flex";
-}
+// LOGIN/CADASTRO
+window.mostrarCadastro = () => { document.getElementById("login").style.display="none"; document.getElementById("cadastro").style.display="flex"; }
+window.mostrarLogin = () => { document.getElementById("cadastro").style.display="none"; document.getElementById("login").style.display="flex"; }
 
 window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try {
-    const cred = await createUserWithEmailAndPassword(auth,email,senha);
-    await setDoc(doc(db,"users",cred.user.uid),{email:email,adm:false});
-    alert("Cadastro realizado!");
-    mostrarLogin();
-  } catch(e){alert(e.message);}
+  try { await createUserWithEmailAndPassword(auth,email,senha); alert("Usuário criado!"); mostrarLogin(); }
+  catch(e){ alert(e.message); }
 }
 
 window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try{
-    await signInWithEmailAndPassword(auth,email,senha);
-  }catch(e){alert(e.message);}
+  try { await signInWithEmailAndPassword(auth,email,senha); }
+  catch(e){ alert(e.message); }
 }
 
-// ======= AUTENTICAÇÃO E PAINEL =======
-onAuthStateChanged(auth,user=>{
+// VERIFICA USUÁRIO LOGADO
+onAuthStateChanged(auth, async (user)=>{
   if(user){
     document.getElementById("login").style.display="none";
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
 
     // ADM
-    if(user.email==="gbx100k@gmail.com") mostrarADM();
-  }else{
-    document.getElementById("painel").style.display="none";
+    if(user.email==="gbx100k@gmail.com") document.getElementById("btnADM").style.display="inline-block";
+    else document.getElementById("btnADM").style.display="none";
+
+    loadUsers();
   }
 });
 
-// ======= CONTADOR GREEN/RED =======
-const ref = doc(db,"historico","global");
-onSnapshot(ref,docSnap=>{
+// GREEN/RED GLOBAL
+onSnapshot(refGlobal, docSnap=>{
   if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+    document.getElementById("green").innerText = docSnap.data().green;
+    document.getElementById("red").innerText = docSnap.data().red;
   }
 });
+window.addGreen = async()=>{ await updateDoc(refGlobal,{green:increment(1)}); }
+window.addRed = async()=>{ await updateDoc(refGlobal,{red:increment(1)}); }
 
-window.addGreen = async ()=>{await updateDoc(ref,{green:increment(1)});}
-window.addRed = async ()=>{await updateDoc(ref,{red:increment(1)});}
-
-// ======= JOGO =======
-let bloqueado=false;
-let avaliacaoFeita=false;
-let jogoAtual=null;
-
-window.gerar = (jogo)=>{
-  if(bloqueado){alert("Aguarde o tempo acabar.");return;}
-  jogoAtual=jogo.toLowerCase();
-  document.getElementById("avaliacao").style.display="block";
-  avaliacaoFeita=false;
-  document.getElementById("btnGreen").disabled=false;
-  document.getElementById("btnRed").disabled=false;
-  let minutos=Math.floor(Math.random()*2)+1;
-  iniciarTimer(minutos);
-};
-
-function iniciarTimer(minutos){
-  bloqueado=true;
-  let tempoRestante=minutos*60;
-  const intervalo=setInterval(()=>{
-    tempoRestante--;
-    document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
-    if(tempoRestante<=0){
-      clearInterval(intervalo);
-      bloqueado=false;
-      avaliacaoFeita=false;
-      document.getElementById("btnGreen").disabled=false;
-      document.getElementById("btnRed").disabled=false;
-      document.getElementById("timer").innerText="";
-    }
-  },1000);
-}
-
-window.marcar=(tipo)=>{
-  if(avaliacaoFeita) return;
-  avaliacaoFeita=true;
-  document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
-  document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
-  document.getElementById("btnGreen").disabled=true;
-  document.getElementById("btnRed").disabled=true;
-
-  // Atualiza global se ADM
-  onAuthStateChanged(auth,user=>{
-    if(user && user.email==="gbx100k@gmail.com"){
-      updateDoc(ref,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
-    }
-  });
-}
-
-// ======= FUNÇÃO ADM =======
-async function mostrarADM(){
-  document.getElementById("admPanel").style.display="block";
-  const col = collection(db,"users");
-  const listDiv = document.getElementById("usuariosList");
-  listDiv.innerHTML="";
-
-  const snapshot = await getDocs(col);
+// CARREGAR USUÁRIOS PARA ADM
+async function loadUsers(){
+  const lista = document.getElementById("userList");
+  if(!lista) return;
+  lista.innerHTML="";
+  const snapshot = await getDocs(refUsers);
   snapshot.forEach(docu=>{
     const data = docu.data();
-    const div = document.createElement("div");
-    div.className="user-item";
-    div.innerHTML=`${data.email} - ADM: ${data.adm} 
-      <button onclick="tornarADM('${docu.id}')">Tornar ADM</button>
-      <button onclick="alterarSenha('${docu.id}')">Alterar Senha</button>`;
-    listDiv.appendChild(div);
+    const li = document.createElement("li");
+    li.innerHTML = `${data.email} - Admin: ${data.isAdmin ? "Sim" : "Não"} 
+      <button onclick="toggleAdmin('${docu.id}',${data.isAdmin})">Alterar Admin</button> 
+      <button onclick="resetSenha('${docu.id}')">Alterar Senha</button>`;
+    lista.appendChild(li);
   });
 }
 
-window.tornarADM = async (uid)=>{
-  await updateDoc(doc(db,"users",uid),{adm:true});
-  mostrarADM();
+// ALTERAR ADMIN
+window.toggleAdmin = async(uid,atual)=>{
+  await updateDoc(doc(db,"users",uid),{isAdmin:!atual});
+  loadUsers();
 }
 
-window.alterarSenha = async (uid)=>{
-  const nova = prompt("Digite a nova senha:");
+// ALTERAR SENHA
+window.resetSenha = async(uid)=>{
+  const nova = prompt("Digite nova senha:");
   if(!nova) return;
-  try{
-    const user = await getDoc(doc(db,"users",uid));
-    // Envia email de reset
-    await sendPasswordResetEmail(auth,user.data().email);
-    alert("Email de reset enviado para "+user.data().email);
-  }catch(e){alert(e.message);}
+  await updateDoc(doc(db,"users",uid),{password:nova});
+  alert("Senha alterada no Firestore (Auth precisa reconfiguração manual).");
 }
+
+// ABRIR PAINEL ADM
+window.abrirADM = ()=>{ document.getElementById("admPanel").style.display="block"; }

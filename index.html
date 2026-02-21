@@ -10,53 +10,50 @@
 
 <!-- LOGIN -->
 <div id="login">
-<div class="login-box">
-<h2>Login</h2>
-<input type="email" id="emailLogin" placeholder="Email">
-<input type="password" id="senhaLogin" placeholder="Senha">
-<button onclick="login()">Entrar</button>
-<p>Não tem conta? <a onclick="mostrarCadastro()">Cadastre-se</a></p>
-</div>
+  <div class="login-box">
+    <h2>ANAC/GB VIP</h2>
+    <input type="email" id="emailLogin" placeholder="Email">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
+  </div>
 </div>
 
 <!-- CADASTRO -->
 <div id="cadastro" style="display:none;">
-<div class="cadastro-box">
-<h2>Cadastro</h2>
-<input type="email" id="emailCadastro" placeholder="Email">
-<input type="password" id="senhaCadastro" placeholder="Senha">
-<button onclick="cadastrar()">Cadastrar</button>
-<p>Já tem conta? <a onclick="mostrarLogin()">Login</a></p>
-</div>
+  <div class="login-box">
+    <h2>Cadastro</h2>
+    <input type="email" id="emailCadastro" placeholder="Email">
+    <input type="password" id="senhaCadastro" placeholder="Senha">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
+  </div>
 </div>
 
 <!-- PAINEL -->
 <div id="painel">
-<div class="topo">
-<h1>ANAC/GB</h1>
-<button onclick="gerar('Tigre')">GERAR TIGRE</button>
-<button onclick="gerar('Touro')">GERAR TOURO</button>
-<button onclick="gerar('Aviator')">GERAR AVIATOR</button>
-<div id="timer"></div>
-</div>
+  <div class="topo">
+    <h1>ANAC/GB</h1>
+    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
+    <button onclick="gerar('Touro')">GERAR TOURO</button>
+    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    <div id="timer"></div>
+    <button id="btnADM" onclick="abrirADM()" style="display:none;">Painel ADM</button>
+  </div>
 
-<div id="oportunidade"></div>
-<div id="avaliacao">
-<button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
-<button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
-<div id="resultadoAvaliacao"></div>
-<div id="tipoEnviado"></div>
-<div id="contadorGlobal"></div>
-</div>
+  <div id="oportunidade"></div>
 
-<!-- Painel ADM -->
-<div id="admPanel">
-<h2>Painel ADM</h2>
-<div id="usuariosList"></div>
-</div>
+  <div id="avaliacao">
+    <button class="av-btn green" onclick="addGreen()">Green ✅</button>
+    <button class="av-btn red" onclick="addRed()">Red ❌</button>
+    <div>Green: <span id="green">0</span></div>
+    <div>Red: <span id="red">0</span></div>
+  </div>
 
-<div class="frame-area">
-<iframe src="https://51graus.vip/?id=655031265"></iframe>
+  <div id="admPanel" style="display:none;">
+    <h2>Usuários</h2>
+    <ul id="userList"></ul>
+  </div>
 </div>
 
 <script type="module" src="main.js"></script>
