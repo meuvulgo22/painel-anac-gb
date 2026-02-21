@@ -1,3 +1,4 @@
+/* Reset */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 
 body{
@@ -27,14 +28,16 @@ body::before{
   to{transform:translate(-200px,-200px);}
 }
 
+/* BOXES */
 .login-box, .cadastro-box{
   background:#0d0d0d;
-  padding:40px;
+  padding:50px;
   border-radius:20px;
   border:1px solid #c9a227;
-  box-shadow:0 0 30px #c9a22755;
+  box-shadow:0 0 50px #c9a22755;
   text-align:center;
-  width:320px;
+  width:350px;
+  animation:fadeIn 1s ease-in-out;
 }
 
 .login-box input, .cadastro-box input{
@@ -45,12 +48,14 @@ body::before{
   border-radius:10px;
   background:#1a1a1a;
   color:#fff;
+  font-size:14px;
 }
 
 .login-box button, .cadastro-box button, .topo button, .av-btn{
   cursor:pointer;
   font-weight:bold;
   border-radius:10px;
+  transition:0.3s;
 }
 
 .login-box button, .cadastro-box button{
@@ -61,25 +66,33 @@ body::before{
   color:#000;
 }
 
-#painel{padding:20px;text-align:center;}
+.login-box button:hover, .cadastro-box button:hover, .topo button:hover, .av-btn:hover{
+  transform:scale(1.05);
+}
+
+/* PAINEL */
+#painel{padding:20px;display:flex;flex-direction:column;align-items:center;}
 .topo{text-align:center;margin-bottom:25px;}
 .topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
 .topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;background:#111;color:#c9a227;border-radius:12px;}
 
+/* TIMER E OPORTUNIDADE */
 #timer{margin-top:10px;color:#aaa;font-size:13px;}
-#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:300px;font-size:14px;}
+#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:350px;font-size:14px;animation:pop 0.5s;}
 
-#avaliacao{display:none;text-align:center;margin-top:15px;}
-.green{background:#2e7d32;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
-.red{background:#c62828;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
+/* AVALIAÇÃO */
+#avaliacao{text-align:center;margin-top:15px;}
+.green{background:#2e7d32;color:#fff;padding:12px 25px;margin:5px;border:none;border-radius:10px;}
+.red{background:#c62828;color:#fff;padding:12px 25px;margin:5px;border:none;border-radius:10px;}
 
-#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
-#tipoEnviado{margin-top:5px;font-size:13px;}
-#contadorGlobal{margin-top:10px;font-size:14px;color:#c9a227;}
+#resultadoAvaliacao,#tipoEnviado{margin-top:10px;font-weight:bold;animation:fadeIn 1s ease-in;}
 
+#contadorGlobal{margin-top:15px;font-size:16px;color:#c9a227;font-weight:bold;animation:fadeIn 1s ease-in;}
+
+/* AVIATOR */
 #aviatorVisual{display:none;text-align:center;margin-top:20px;}
-.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
-.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
+.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:350px;margin:0 auto;position:relative;overflow:hidden;animation:fadeIn 1s ease-in-out;}
+.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.3;}
 .plane:nth-child(1){top:20%;animation-duration:7s;}
 .plane:nth-child(2){top:50%;animation-duration:9s;}
 .plane:nth-child(3){top:75%;animation-duration:6s;}
@@ -88,5 +101,11 @@ body::before{
 .circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
 @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
 .info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
-.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
+
+/* IFRAME */
+.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;width:90%;max-width:800px;}
 iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}
+
+/* ANIMAÇÕES */
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes pop{0%{transform:scale(0.7);}100%{transform:scale(1);}}
