@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANAC/GB VIP</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANAC/GB VIP</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -14,8 +14,8 @@
     <h2>Login</h2>
     <input type="email" id="emailLogin" placeholder="Email">
     <input type="password" id="senhaLogin" placeholder="Senha">
-    <button id="btnLogin">Entrar</button>
-    <p>Não tem conta? <a href="#" id="linkCadastro">Cadastre-se</a></p>
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
   </div>
 </div>
 
@@ -25,8 +25,8 @@
     <h2>Cadastro</h2>
     <input type="email" id="emailCadastro" placeholder="Email">
     <input type="password" id="senhaCadastro" placeholder="Senha">
-    <button id="btnCadastro">Cadastrar</button>
-    <p>Já tem conta? <a href="#" id="linkLogin">Login</a></p>
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
   </div>
 </div>
 
@@ -34,12 +34,36 @@
 <div id="painel">
   <div class="topo">
     <h1>ANAC/GB</h1>
+    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
+    <button onclick="gerar('Touro')">GERAR TOURO</button>
+    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    <div id="timer"></div>
+  </div>
+
+  <div id="oportunidade"></div>
+
+  <div id="avaliacao">
+    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
+    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
+    <div id="resultadoAvaliacao"></div>
+    <div id="tipoEnviado"></div>
     <div id="contadorGlobal"></div>
   </div>
-  <p>Bem-vindo ao painel! Você está logado ✅</p>
-  <button id="btnLogout">Sair</button>
+
+  <div id="aviatorVisual">
+    <div class="aviator-box">
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="aviator-title">AVIATOR</div>
+      <div class="circle"><span id="multiplicador">1.00X</span></div>
+      <div class="info-text">No máximo 1 até 3 vezes pra fazer tentativa!</div>
+    </div>
+  </div>
+
+  <div class="frame-area"><iframe src="https://51graus.vip/?id=655031265"></iframe></div>
 </div>
 
-<script type="module" src="main.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
