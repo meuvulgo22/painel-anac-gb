@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, updateDoc, onSnapshot, increment } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // CONFIG FIREBASE
 const firebaseConfig = {
@@ -17,59 +19,56 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ===== LOGIN/CADASTRO =====
-function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
-function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
+const ref = doc(db,"historico","global");
 
-window.cadastrar = async function(){
+// ===== LOGIN/CADASTRO =====
+window.mostrarCadastro = () => {document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
+window.mostrarLogin = () => {document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
+
+window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try{
+  try {
     await createUserWithEmailAndPassword(auth,email,senha);
     alert("Cadastro realizado!");
     mostrarLogin();
-  }catch(e){alert(e.message);}
-};
+  } catch(e){ alert(e.message); }
+}
 
-window.login = async function(){
+window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try{
-    await signInWithEmailAndPassword(auth,email,senha);
-  }catch(e){alert(e.message);}
-};
+  try { await signInWithEmailAndPassword(auth,email,senha); } 
+  catch(e){ alert(e.message); }
+}
 
 // ===== PAINEL =====
-let bloqueado=false;
-let intervalo;
-let animacaoMulti;
-let avaliacaoFeita=false;
-let jogoAtual=null;
+let jogoAtual=null, bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false;
 
 onAuthStateChanged(auth,(user)=>{
   if(user){
     document.getElementById("login").style.display="none";
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
-  }else{
-    document.getElementById("login").style.display="flex";
-    document.getElementById("cadastro").style.display="none";
+    // ADM
+    document.getElementById("contadorGlobal").style.display = (user.email==="gbx100k@gmail.com")?"block":"none";
+  } else {
     document.getElementById("painel").style.display="none";
+    document.getElementById("login").style.display="flex";
   }
 });
 
-// Firestore - Contador global
-const ref = doc(db,"historico","global");
+// Firestore - Contador global ADM
 onSnapshot(ref,(docSnap)=>{
   if(docSnap.exists()){
     document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
   }
 });
 
-window.addGreen = async function(){await updateDoc(ref,{green:increment(1)});};
-window.addRed = async function(){await updateDoc(ref,{red:increment(1)});};
+window.addGreen = async () => { await updateDoc(ref,{green:increment(1)}); };
+window.addRed = async () => { await updateDoc(ref,{red:increment(1)}); };
 
-// ===== FUNÇÕES DE JOGO =====
+// ===== JOGO =====
 function iniciarTimer(minutos){
   bloqueado=true;
   let tempoRestante=minutos*60;
@@ -99,7 +98,6 @@ window.gerar = function(jogo){
   avaliacaoFeita=false;
   document.getElementById("btnGreen").disabled=false;
   document.getElementById("btnRed").disabled=false;
-
   let minutos=Math.floor(Math.random()*2)+1;
 
   if(jogo==="Aviator"){
@@ -127,10 +125,16 @@ window.gerar = function(jogo){
 };
 
 window.marcar = function(tipo){
-  if(avaliacaoFeita||!jogoAtual)return;
+  if(avaliacaoFeita||!jogoAtual) return;
   avaliacaoFeita=true;
   document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
   document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
   document.getElementById("btnGreen").disabled=true;
   document.getElementById("btnRed").disabled=true;
+
+  onAuthStateChanged(auth,(user)=>{
+    if(user && user.email==="gbx100k@gmail.com"){
+      updateDoc(ref,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
+    }
+  });
 };
