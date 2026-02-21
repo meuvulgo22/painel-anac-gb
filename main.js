@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -45,7 +44,6 @@ onAuthStateChanged(auth, async (user)=>{
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
 
-    // ADM?
     if(user.email === "gbx100k@gmail.com"){
       document.getElementById("btnADMPanel").style.display="block";
     } else {
@@ -61,9 +59,11 @@ window.mostrarADM = async () => {
   const listaDiv = document.getElementById("listaUsuarios");
   listaDiv.innerHTML = "<h2>Usuários cadastrados:</h2>";
 
-  const querySnapshot = await getDoc(doc(db,"historico","global"));
-  onSnapshot(doc(db,"usuarios","global"), (snap)=>{
-    // aqui você pode pegar todos os usuários e mostrar
+  const querySnapshot = await getDocs(collection(db,"usuarios"));
+  querySnapshot.forEach((docu)=>{
+    const div = document.createElement("div");
+    div.innerText = docu.data().email;
+    listaDiv.appendChild(div);
   });
 };
 
@@ -83,12 +83,8 @@ onSnapshot(ref,(docSnap)=>{
 window.addGreen = async () => { await updateDoc(ref,{green: increment(1)}); };
 window.addRed = async () => { await updateDoc(ref,{red: increment(1)}); };
 
-// FUNCÕES JOGO (Tigre, Touro, Aviator)
-let bloqueado=false;
-let intervalo;
-let animacaoMulti;
-let avaliacaoFeita=false;
-let jogoAtual=null;
+// FUNÇÕES JOGO
+let bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false, jogoAtual=null;
 
 window.gerar = function(jogo){
   if(bloqueado){alert("Aguarde o tempo acabar."); return;}
@@ -153,7 +149,6 @@ window.marcar = function(tipo){
   document.getElementById("btnGreen").disabled=true;
   document.getElementById("btnRed").disabled=true;
 
-  // Atualiza global se ADM
   onAuthStateChanged(auth,(user)=>{
     if(user && user.email==="gbx100k@gmail.com"){
       updateDoc(ref,(tipo==="GREEN")?{green: increment(1)}:{red: increment(1)});
