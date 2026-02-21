@@ -4,13 +4,13 @@ let intervalo;
 let animacaoMulti;
 let avaliacaoFeita=false;
 
-// Entrar
+// Mantendo login original
 function entrar(){
   if(document.getElementById("senha").value==="ANA/GB/2026"){
     document.getElementById("login").style.display="none";
     document.getElementById("painel").style.display="block";
 
-    // Avaliação já visível
+    // Avaliação já visível automaticamente
     document.getElementById("avaliacao").style.display="flex";
     document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
     document.getElementById("tipoEnviado").innerText="Enviada como GREEN";
@@ -19,7 +19,6 @@ function entrar(){
   }
 }
 
-// Timer
 function iniciarTimer(minutos){
   bloqueado=true;
   tempoRestante=minutos*60;
@@ -38,9 +37,7 @@ function iniciarTimer(minutos){
   },1000);
 }
 
-// Gerar
 function gerar(jogo){
-
   if(bloqueado){
     alert("Aguarde o tempo acabar.");
     return;
@@ -83,7 +80,6 @@ function gerar(jogo){
   }
 }
 
-// Marcar
 function marcar(tipo){
   if(avaliacaoFeita) return;
 
