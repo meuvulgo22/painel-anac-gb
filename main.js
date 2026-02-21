@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, collection, getDocs, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Config Firebase
@@ -21,6 +21,14 @@ const auth = getAuth(app);
 const loginDiv = document.getElementById("login");
 const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
+
+// VARIÁVEIS DO JOGO
+let bloqueado=false;
+let tempoRestante=0;
+let intervalo;
+let animacaoMulti;
+let avaliacaoFeita=false;
+let jogoAtual=null;
 
 // FUNÇÕES LOGIN/CADASTRO
 function mostrarCadastro(){loginDiv.style.display="none"; cadastroDiv.style.display="flex";}
@@ -44,21 +52,44 @@ window.login = async function(){
   }catch(e){alert(e.message);}
 }
 
-// CONTADOR GLOBAL
+// ===== CONTADOR GLOBAL =====
 const refGlobal = doc(db,"historico","global");
 onSnapshot(refGlobal,docSnap=>{
   if(docSnap.exists()){
-    document.getElementById("btnGreen").innerText="DEU GREEN ✅ ("+docSnap.data().green+")";
-    document.getElementById("btnRed").innerText="DEU RED ❌ ("+docSnap.data().red+")";
+    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+  }
+});
+
+window.addGreen = async ()=>{await updateDoc(refGlobal,{green:increment(1)});}
+window.addRed = async ()=>{await updateDoc(refGlobal,{red:increment(1)});}
+
+// ===== AUTENTICAÇÃO E PAINEL =====
+// Persistência automática: se o usuário já estiver logado, mostra painel direto
+onAuthStateChanged(auth, user => {
+  if(user){
+    loginDiv.style.display="none";
+    cadastroDiv.style.display="none";
+    painelDiv.style.display="block";
+
+    // Deixa os botões de avaliação já visíveis sem precisar clicar
+    document.getElementById("avaliacao").style.display="block";
+
+    // Se tiver Aviator gerado antes, mantém visível (opcional)
+    if(jogoAtual === "aviator") document.getElementById("aviatorVisual").style.display="block";
+
+  } else {
+    loginDiv.style.display="flex";
+    cadastroDiv.style.display="none";
+    painelDiv.style.display="none";
   }
 });
 
 // ===== JOGO =====
-let bloqueado=false, intervalo, animacaoMulti=false, avaliacaoFeita=false;
-
 window.gerar = function(jogo){
   if(bloqueado){alert("Aguarde o tempo acabar."); return;}
-  document.getElementById("avaliacao").style.display="flex";
+  jogoAtual = jogo.toLowerCase();
+
+  document.getElementById("avaliacao").style.display="block";
   document.getElementById("resultadoAvaliacao").innerText="";
   document.getElementById("tipoEnviado").innerText="";
   avaliacaoFeita=false;
@@ -69,23 +100,34 @@ window.gerar = function(jogo){
 
   if(jogo==="Aviator"){
     document.getElementById("aviatorVisual").style.display="block";
+
     let multi=1.00;
     let limite=(Math.random()*5.45 + 1).toFixed(2);
     clearInterval(animacaoMulti);
     animacaoMulti=setInterval(()=>{
       multi+=0.05;
       document.getElementById("multiplicador").innerText=multi.toFixed(2)+"X";
-      if(multi>=limite) clearInterval(animacaoMulti);
+      if(multi>=limite){ clearInterval(animacaoMulti); }
     },100);
+
     iniciarTimer(minutos);
   }
 
   if(jogo==="Tigre" || jogo==="Touro"){
     let op=document.getElementById("oportunidade");
-    let bet=(jogo==="Tigre")?(Math.random()<0.5?0.40:0.80):(Math.random()<0.5?0.50:1.00);
+
+    let bet = (jogo==="Tigre") ? (Math.random()<0.5?0.40:0.80) : (Math.random()<0.5?0.50:1.00);
     let normal=Math.floor(Math.random()*10)+1;
     let turbo=Math.floor(Math.random()*10)+1;
-    op.innerHTML=`<b>✅ OPORTUNIDADE GERADA!</b><br><br>🦁 ${jogo} 🦁<br>⏰ Válido por: ${minutos} minuto(s)<br>💰 Bet: R$ ${bet.toFixed(2)}<br>👉 ${normal}x Normal<br>⚡ ${turbo}x Turbo`;
+
+    op.innerHTML=`
+      <b>✅ OPORTUNIDADE GERADA!</b><br><br>
+      🦁 ${jogo} 🦁<br>
+      ⏰ Válido por: ${minutos} minuto(s)<br>
+      💰 Bet: R$ ${bet.toFixed(2)}<br>
+      👉 ${normal}x Normal<br>
+      ⚡ ${turbo}x Turbo
+    `;
     op.style.display="block";
     iniciarTimer(minutos);
   }
@@ -93,12 +135,12 @@ window.gerar = function(jogo){
 
 function iniciarTimer(minutos){
   bloqueado=true;
-  let tempo= minutos*60;
+  tempoRestante=minutos*60;
   clearInterval(intervalo);
   intervalo=setInterval(()=>{
-    tempo--;
-    document.getElementById("timer").innerText="Nova oportunidade em: "+tempo+"s";
-    if(tempo<=0){
+    tempoRestante--;
+    document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
+    if(tempoRestante<=0){
       clearInterval(intervalo);
       bloqueado=false;
       avaliacaoFeita=false;
@@ -111,11 +153,17 @@ function iniciarTimer(minutos){
   },1000);
 }
 
+// ===== AVALIAÇÃO =====
 window.marcar=function(tipo){
   if(avaliacaoFeita) return;
+
   avaliacaoFeita=true;
   document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
   document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
+
   document.getElementById("btnGreen").disabled=true;
   document.getElementById("btnRed").disabled=true;
+
+  // Atualiza contador global automaticamente
+  if(tipo==="GREEN") addGreen(); else addRed();
 }
