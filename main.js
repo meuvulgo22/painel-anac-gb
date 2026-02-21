@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Config Firebase
@@ -21,8 +21,6 @@ const auth = getAuth(app);
 const loginDiv = document.getElementById("login");
 const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
-const painelADM = document.getElementById("painelADM");
-const btnPainelADM = document.getElementById("btnPainelADM");
 
 // FUNÇÕES LOGIN/CADASTRO
 function mostrarCadastro(){loginDiv.style.display="none"; cadastroDiv.style.display="flex";}
@@ -52,32 +50,22 @@ onAuthStateChanged(auth,user=>{
     loginDiv.style.display="none";
     cadastroDiv.style.display="none";
     painelDiv.style.display="block";
-
-    // BOTÃO ADM
-    if(user.email==="gbx100k@gmail.com"){
-      btnPainelADM.style.display="block";
-    }else{
-      btnPainelADM.style.display="none";
-    }
-
-    // Atualiza contador global automaticamente
-    atualizarContadorGlobal();
   } else {
     loginDiv.style.display="flex";
     painelDiv.style.display="none";
-    painelADM.style.display="none";
   }
 });
 
 // ===== CONTADOR GLOBAL =====
 const refGlobal = doc(db,"historico","global");
-function atualizarContadorGlobal(){
-  onSnapshot(refGlobal,docSnap=>{
-    if(docSnap.exists()){
-      document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
-    }
-  });
-}
+onSnapshot(refGlobal,docSnap=>{
+  if(docSnap.exists()){
+    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+  }
+});
+
+window.addGreen = async ()=>{await updateDoc(refGlobal,{green:increment(1)});}
+window.addRed = async ()=>{await updateDoc(refGlobal,{red:increment(1)});}
 
 // ===== JOGO =====
 let bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false, jogoAtual=null;
@@ -146,45 +134,5 @@ window.marcar=function(tipo){
   document.getElementById("btnRed").disabled=true;
 
   // Atualiza contador global
-  onAuthStateChanged(auth,user=>{
-    if(user && user.email==="gbx100k@gmail.com"){
-      updateDoc(refGlobal,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
-    }
-  });
-}
-
-// ===== PAINEL ADM =====
-window.abrirADM=function(){
-  painelADM.style.display="block";
-  painelDiv.style.display="none";
-  carregarUsuarios();
-}
-
-window.fecharADM=function(){
-  painelADM.style.display="none";
-  painelDiv.style.display="block";
-}
-
-// Listar usuários
-async function carregarUsuarios(){
-  const lista = document.getElementById("listaUsuarios");
-  lista.innerHTML="";
-  const snapshot = await getDocs(collection(db,"usuarios"));
-  snapshot.forEach(docu=>{
-    const data=docu.data();
-    const div = document.createElement("div");
-    div.innerHTML=`<b>${docu.id}</b> | Admin: ${data.admin ? "Sim":"Não"} <button onclick="toggleADM('${docu.id}')">Alternar ADM</button>`;
-    lista.appendChild(div);
-  });
-}
-
-// Alternar ADM
-window.toggleADM=async function(uid){
-  const refUser = doc(db,"usuarios",uid);
-  const docSnap = await getDoc(refUser);
-  if(docSnap.exists()){
-    const adminAtual = docSnap.data().admin || false;
-    await updateDoc(refUser,{admin:!adminAtual});
-    carregarUsuarios();
-  }
+  updateDoc(refGlobal,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
 }

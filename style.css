@@ -1,13 +1,30 @@
-/* Reset básico */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-body{background:#000;color:#fff;overflow-x:hidden;height:100vh;}
 
-/* LOGIN CENTRALIZADO */
-#login, #cadastro{
+body{
+  background:#000;
+  color:#fff;
+  overflow-x:hidden;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
+  flex-direction:column;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
+  background-size:60px 60px;
+  animation:move 20s linear infinite;
+  z-index:-1;
+}
+
+@keyframes move{
+  from{transform:translate(0,0);}
+  to{transform:translate(-200px,-200px);}
 }
 
 .login-box, .cadastro-box{
@@ -18,13 +35,6 @@ body{background:#000;color:#fff;overflow-x:hidden;height:100vh;}
   box-shadow:0 0 30px #c9a22755;
   text-align:center;
   width:320px;
-  animation:loginPulse 2s infinite alternate;
-}
-
-@keyframes loginPulse{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.02);}
-  100%{transform:scale(1);}
 }
 
 .login-box input, .cadastro-box input{
@@ -37,68 +47,36 @@ body{background:#000;color:#fff;overflow-x:hidden;height:100vh;}
   color:#fff;
 }
 
+.login-box button, .cadastro-box button, .topo button, .av-btn{
+  cursor:pointer;
+  font-weight:bold;
+  border-radius:10px;
+}
+
 .login-box button, .cadastro-box button{
   width:100%;
   padding:14px;
   border:none;
-  border-radius:10px;
   background:#c9a227;
   color:#000;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.3s;
 }
 
-.login-box button:hover, .cadastro-box button:hover{
-  transform:scale(1.05);
-}
-
-/* PAINEL */
-#painel{padding:20px;}
+#painel{padding:20px;text-align:center;}
 .topo{text-align:center;margin-bottom:25px;}
 .topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
-.topo button{
-  padding:10px 25px;
-  margin:5px;
-  border:1px solid #c9a227;
-  background:#111;
-  color:#c9a227;
-  border-radius:12px;
-  transition:0.3s;
-}
-.topo button:hover{transform:scale(1.05);}
+.topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;background:#111;color:#c9a227;border-radius:12px;}
 
-/* CONTADOR GLOBAL */
-#contadorGlobal{
-  margin-top:10px;
-  font-size:16px;
-  font-weight:bold;
-  color:#2dd36f;
-  animation:glow 1.5s infinite alternate;
-}
+#timer{margin-top:10px;color:#aaa;font-size:13px;}
+#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:300px;font-size:14px;}
 
-@keyframes glow{
-  0%{text-shadow:0 0 5px #2dd36f;}
-  50%{text-shadow:0 0 20px #2dd36f,0 0 40px #2dd36f;}
-  100%{text-shadow:0 0 5px #2dd36f;}
-}
+#avaliacao{display:none;text-align:center;margin-top:15px;}
+.green{background:#2e7d32;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
+.red{background:#c62828;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
 
-/* AVALIAÇÃO */
-#avaliacao{display:flex;justify-content:center;margin-top:15px;gap:10px;}
-.av-btn{
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.3s;
-}
-.green{background:#2e7d32;color:#fff;}
-.green:hover{transform:scale(1.1);}
-.red{background:#c62828;color:#fff;}
-.red:hover{transform:scale(1.1);}
+#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
+#tipoEnviado{margin-top:5px;font-size:13px;}
+#contadorGlobal{margin-top:10px;font-size:14px;color:#c9a227;}
 
-/* AVIATOR */
 #aviatorVisual{display:none;text-align:center;margin-top:20px;}
 .aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
 .plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
