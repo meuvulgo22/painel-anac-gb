@@ -53,9 +53,15 @@ onAuthStateChanged(auth,user=>{
     cadastroDiv.style.display="none";
     painelDiv.style.display="block";
 
-    // Botão ADM apenas para admin
-    btnPainelADM.style.display = (user.email === "gbx100k@gmail.com") ? "block" : "none";
+    // BOTÃO ADM
+    if(user.email==="gbx100k@gmail.com"){
+      btnPainelADM.style.display="block";
+    }else{
+      btnPainelADM.style.display="none";
+    }
 
+    // Atualiza contador global automaticamente
+    atualizarContadorGlobal();
   } else {
     loginDiv.style.display="flex";
     painelDiv.style.display="none";
@@ -65,14 +71,13 @@ onAuthStateChanged(auth,user=>{
 
 // ===== CONTADOR GLOBAL =====
 const refGlobal = doc(db,"historico","global");
-onSnapshot(refGlobal,docSnap=>{
-  if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
-  }
-});
-
-window.addGreen = async ()=>{await updateDoc(refGlobal,{green:increment(1)});}
-window.addRed = async ()=>{await updateDoc(refGlobal,{red:increment(1)});}
+function atualizarContadorGlobal(){
+  onSnapshot(refGlobal,docSnap=>{
+    if(docSnap.exists()){
+      document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+    }
+  });
+}
 
 // ===== JOGO =====
 let bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false, jogoAtual=null;
@@ -168,17 +173,9 @@ async function carregarUsuarios(){
   snapshot.forEach(docu=>{
     const data=docu.data();
     const div = document.createElement("div");
-    div.innerHTML=`<b>${docu.id}</b> | <button onclick="mudarSenha('${docu.id}')">Mudar Senha</button> | Admin: ${data.admin ? "Sim":"Não"} <button onclick="toggleADM('${docu.id}')">Alternar ADM</button>`;
+    div.innerHTML=`<b>${docu.id}</b> | Admin: ${data.admin ? "Sim":"Não"} <button onclick="toggleADM('${docu.id}')">Alternar ADM</button>`;
     lista.appendChild(div);
   });
-}
-
-// Mudar senha
-window.mudarSenha=async function(uid){
-  const nova = prompt("Digite a nova senha para "+uid);
-  if(nova){
-    alert("No front-end você não pode alterar a senha de outros usuários diretamente sem Admin SDK. Use Firebase Console para isso.");
-  }
 }
 
 // Alternar ADM

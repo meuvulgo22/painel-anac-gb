@@ -1,50 +1,30 @@
-/* RESET E FONTE */
+/* Reset básico */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{background:#000;color:#fff;overflow-x:hidden;height:100vh;}
 
-/* BODY CENTRALIZADO */
-body{
-  background:#0d0d0d;
-  color:#fff;
+/* LOGIN CENTRALIZADO */
+#login, #cadastro{
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  overflow:hidden;
 }
 
-/* ANIMAÇÃO DE FUNDO */
-body::before{
-  content:"";
-  position:fixed;
-  width:200%;
-  height:200%;
-  background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
-  background-size:60px 60px;
-  animation:move 20s linear infinite;
-  z-index:-1;
-}
-
-@keyframes move{
-  from{transform:translate(0,0);}
-  to{transform:translate(-200px,-200px);}
-}
-
-/* LOGIN E CADASTRO */
 .login-box, .cadastro-box{
-  background:#111;
+  background:#0d0d0d;
   padding:40px;
   border-radius:20px;
-  border:2px solid #c9a227;
-  width:360px;
+  border:1px solid #c9a227;
+  box-shadow:0 0 30px #c9a22755;
   text-align:center;
-  box-shadow: 0 0 30px #c9a22744;
-  animation:fadeIn 1.2s ease forwards;
+  width:320px;
+  animation:loginPulse 2s infinite alternate;
 }
 
-.login-box h2, .cadastro-box h2{
-  color:#c9a227;
-  margin-bottom:25px;
-  letter-spacing:2px;
+@keyframes loginPulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.02);}
+  100%{transform:scale(1);}
 }
 
 .login-box input, .cadastro-box input{
@@ -55,52 +35,68 @@ body::before{
   border-radius:10px;
   background:#1a1a1a;
   color:#fff;
-  transition:0.3s;
-}
-.login-box input:focus, .cadastro-box input:focus{
-  border:1px solid #c9a227;
-  outline:none;
 }
 
-/* BOTOES */
-.login-box button, .cadastro-box button, .topo button, .av-btn{
-  cursor:pointer;
-  font-weight:bold;
-  border-radius:10px;
-  transition:0.3s;
-}
 .login-box button, .cadastro-box button{
   width:100%;
   padding:14px;
   border:none;
+  border-radius:10px;
   background:#c9a227;
   color:#000;
-}
-.login-box button:hover, .cadastro-box button:hover{
-  background:#ffdc4d;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
 }
 
-/* PAINEL PRINCIPAL */
-#painel, #painelADM{padding:20px;}
+.login-box button:hover, .cadastro-box button:hover{
+  transform:scale(1.05);
+}
+
+/* PAINEL */
+#painel{padding:20px;}
 .topo{text-align:center;margin-bottom:25px;}
 .topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
-.topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;background:#111;color:#c9a227;border-radius:12px;}
-.topo button:hover{background:#222;}
+.topo button{
+  padding:10px 25px;
+  margin:5px;
+  border:1px solid #c9a227;
+  background:#111;
+  color:#c9a227;
+  border-radius:12px;
+  transition:0.3s;
+}
+.topo button:hover{transform:scale(1.05);}
 
-/* TIMER E OPORTUNIDADE */
-#timer{margin-top:10px;color:#aaa;font-size:13px;}
-#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:320px;font-size:14px;box-shadow:0 0 20px #c9a22744; animation:fadeIn 0.8s ease;}
+/* CONTADOR GLOBAL */
+#contadorGlobal{
+  margin-top:10px;
+  font-size:16px;
+  font-weight:bold;
+  color:#2dd36f;
+  animation:glow 1.5s infinite alternate;
+}
 
-/* AVALIACAO */
-#avaliacao{display:none;text-align:center;margin-top:15px;}
-.green{background:#2e7d32;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
-.green:hover{background:#4caf50;}
-.red{background:#c62828;color:#fff;padding:10px 20px;margin:5px;border:none;border-radius:10px;}
-.red:hover{background:#e53935;}
+@keyframes glow{
+  0%{text-shadow:0 0 5px #2dd36f;}
+  50%{text-shadow:0 0 20px #2dd36f,0 0 40px #2dd36f;}
+  100%{text-shadow:0 0 5px #2dd36f;}
+}
 
-#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
-#tipoEnviado{margin-top:5px;font-size:13px;}
-#contadorGlobal{margin-top:10px;font-size:14px;color:#c9a227;}
+/* AVALIAÇÃO */
+#avaliacao{display:flex;justify-content:center;margin-top:15px;gap:10px;}
+.av-btn{
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+.green{background:#2e7d32;color:#fff;}
+.green:hover{transform:scale(1.1);}
+.red{background:#c62828;color:#fff;}
+.red:hover{transform:scale(1.1);}
 
 /* AVIATOR */
 #aviatorVisual{display:none;text-align:center;margin-top:20px;}
@@ -114,10 +110,5 @@ body::before{
 .circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
 @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
 .info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
-
-/* IFRAME */
 .frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
 iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}
-
-/* ANIMAÇÕES GERAIS */
-@keyframes fadeIn{0%{opacity:0;transform:translateY(-20px);}100%{opacity:1;transform:translateY(0);}}
