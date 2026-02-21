@@ -21,33 +21,19 @@ const auth = getAuth(app);
 
 const refGlobal = doc(db,"historico","global");
 
-// ===== LOGIN/CADASTRO =====
-function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
-function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
-
-window.cadastrar=async function(){
-  const email=document.getElementById("emailCadastro").value;
-  const senha=document.getElementById("senhaCadastro").value;
-  try{
-    await createUserWithEmailAndPassword(auth,email,senha);
-    alert("Cadastro realizado!");
-    mostrarLogin();
-  }catch(e){alert(e.message);}
-}
-
-window.login=async function(){
-  const email=document.getElementById("emailLogin").value;
-  const senha=document.getElementById("senhaLogin").value;
-  try{
+// ===== LOGIN =====
+window.login = async function(){
+  const email = document.getElementById("emailLogin").value;
+  const senha = document.getElementById("senhaLogin").value;
+  try {
     await signInWithEmailAndPassword(auth,email,senha);
-  }catch(e){alert(e.message);}
+  } catch(e){ alert(e.message);}
 }
 
 // ===== AUTENTICAÇÃO =====
 onAuthStateChanged(auth,user=>{
   if(user){
     document.getElementById("login").style.display="none";
-    document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
 
     if(user.email==="gbx100k@gmail.com"){
@@ -69,10 +55,10 @@ window.addGreen=async()=>await updateDoc(refGlobal,{green:increment(1)});
 window.addRed=async()=>await updateDoc(refGlobal,{red:increment(1)});
 
 // ===== JOGO =====
-let bloqueado=false,intervalo,animacaoMulti,avaliacaoFeita=false;
+let bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false;
 
 window.gerar=function(jogo){
-  if(bloqueado){alert("Aguarde o tempo acabar."); return;}
+  if(bloqueado){ alert("Aguarde o tempo acabar."); return; }
   document.getElementById("avaliacao").style.display="block";
   document.getElementById("resultadoAvaliacao").innerText="";
   document.getElementById("tipoEnviado").innerText="";
@@ -80,7 +66,7 @@ window.gerar=function(jogo){
   document.getElementById("btnGreen").disabled=false;
   document.getElementById("btnRed").disabled=false;
 
-  let minutos=Math.floor(Math.random()*2)+1;
+  let minutos = Math.floor(Math.random()*2)+1;
 
   if(jogo==="Aviator"){
     document.getElementById("aviatorVisual").style.display="block";
@@ -157,5 +143,3 @@ window.mudarSenha=async(uid)=>{
   if(nova) await setDoc(doc(db,"users",uid),{senha:nova},{merge:true});
   alert("Senha alterada!");
 }
-
-window.abrirADM=()=>alert("Tela ADM completa aqui com lista de usuários e funções de modificação.");
