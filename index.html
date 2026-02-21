@@ -6,78 +6,57 @@
 <title>ANAC/GB VIP</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <!-- LOGIN -->
 <div id="login">
-  <div class="login-box">
-    <h2>Login</h2>
-    <input type="email" id="emailLogin" placeholder="Email">
-    <input type="password" id="senhaLogin" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
-    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
-  </div>
+<div class="login-box">
+<h2>Login</h2>
+<input type="email" id="emailLogin" placeholder="Email">
+<input type="password" id="senhaLogin" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+<p>Não tem conta? <a onclick="mostrarCadastro()">Cadastre-se</a></p>
+</div>
 </div>
 
 <!-- CADASTRO -->
 <div id="cadastro" style="display:none;">
-  <div class="cadastro-box">
-    <h2>Cadastro</h2>
-    <input type="email" id="emailCadastro" placeholder="Email">
-    <input type="password" id="senhaCadastro" placeholder="Senha">
-    <button onclick="cadastrar()">Cadastrar</button>
-    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
-  </div>
+<div class="cadastro-box">
+<h2>Cadastro</h2>
+<input type="email" id="emailCadastro" placeholder="Email">
+<input type="password" id="senhaCadastro" placeholder="Senha">
+<button onclick="cadastrar()">Cadastrar</button>
+<p>Já tem conta? <a onclick="mostrarLogin()">Login</a></p>
+</div>
 </div>
 
-<!-- PAINEL NORMAL -->
-<div id="painel" style="display:none;">
-
-  <div class="topo">
-    <h1>ANAC/GB</h1>
-    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
-    <button onclick="gerar('Touro')">GERAR TOURO</button>
-    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
-    <div id="timer"></div>
-  </div>
-
-  <div id="oportunidade"></div>
-
-  <div id="avaliacao">
-    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
-    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
-    <div id="resultadoAvaliacao"></div>
-    <div id="tipoEnviado"></div>
-  </div>
-
-  <div id="contadorGlobal"></div>
-
-  <div id="aviatorVisual">
-    <div class="aviator-box">
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="aviator-title">AVIATOR</div>
-      <div class="circle"><span id="multiplicador">1.00X</span></div>
-      <div class="info-text">No máximo 1 até 3 vezes pra fazer tentativa!</div>
-    </div>
-  </div>
-
-  <div class="frame-area">
-    <iframe src="https://51graus.vip/?id=655031265"></iframe>
-  </div>
-
-  <!-- BOTÃO PARA PAINEL ADM -->
-  <button id="btnPainelADM" style="display:none;" onclick="abrirADM()">Abrir Painel ADM</button>
-
+<!-- PAINEL -->
+<div id="painel">
+<div class="topo">
+<h1>ANAC/GB</h1>
+<button onclick="gerar('Tigre')">GERAR TIGRE</button>
+<button onclick="gerar('Touro')">GERAR TOURO</button>
+<button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+<div id="timer"></div>
 </div>
 
-<!-- PAINEL ADM -->
-<div id="painelADM" style="display:none;">
-  <h2>Painel ADM</h2>
-  <button onclick="fecharADM()">Voltar</button>
-  <div id="listaUsuarios"></div>
+<div id="oportunidade"></div>
+<div id="avaliacao">
+<button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
+<button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
+<div id="resultadoAvaliacao"></div>
+<div id="tipoEnviado"></div>
+<div id="contadorGlobal"></div>
+</div>
+
+<!-- Painel ADM -->
+<div id="admPanel">
+<h2>Painel ADM</h2>
+<div id="usuariosList"></div>
+</div>
+
+<div class="frame-area">
+<iframe src="https://51graus.vip/?id=655031265"></iframe>
 </div>
 
 <script type="module" src="main.js"></script>
