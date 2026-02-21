@@ -1,105 +1,99 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-// CONFIG FIREBASE
+// Config Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
-  authDomain: "painel-anac-gb.firebaseapp.com",
-  projectId: "painel-anac-gb",
-  storageBucket: "painel-anac-gb.appspot.com",
-  messagingSenderId: "941890806312",
-  appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d",
-  measurementId: "G-HG4KDJBP3G"
+  // COLE AQUI SEU FIREBASE CONFIG
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Elementos
+const loginScreen = document.getElementById("login-screen");
+const mainScreen = document.getElementById("main-screen");
+const adminScreen = document.getElementById("admin-screen");
 
-// MOSTRAR/OCULTAR LOGIN/CADASTRO
-window.mostrarCadastro = () => {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("cadastro").style.display = "flex";
-};
-window.mostrarLogin = () => {
-  document.getElementById("cadastro").style.display = "none";
-  document.getElementById("login").style.display = "flex";
-};
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const adminPanelBtn = document.getElementById("adminPanelBtn");
+const backBtn = document.getElementById("backBtn");
 
-// CADASTRO
-window.cadastrar = async () => {
-  const email = document.getElementById("emailCadastro").value;
-  const senha = document.getElementById("senhaCadastro").value;
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    // Criar doc do usuário
-    await setDoc(doc(db, "usuarios", userCredential.user.uid), { email, isAdmin: false });
-    alert("Cadastro realizado!");
-    mostrarLogin();
-  } catch(e){ alert(e.message); }
-};
+const globalStats = document.getElementById("global-stats");
+const resultDiv = document.getElementById("result");
+const usersList = document.getElementById("users-list");
 
-// LOGIN
-window.login = async () => {
-  const email = document.getElementById("emailLogin").value;
-  const senha = document.getElementById("senhaLogin").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-  } catch(e){ alert(e.message); }
-};
+const tigreBtn = document.getElementById("tigreBtn");
+const touroBtn = document.getElementById("touroBtn");
+const aviatorBtn = document.getElementById("aviatorBtn");
 
-// AUTENTICAÇÃO
-onAuthStateChanged(auth, async (user) => {
-  if(user){
-    document.getElementById("login").style.display = "none";
-    document.getElementById("cadastro").style.display = "none";
-    document.getElementById("painel").style.display = "block";
+let currentUser = null;
 
-    const docRef = doc(db, "usuarios", user.uid);
-    const docSnap = await getDoc(docRef);
-    const isAdmin = docSnap.exists() && docSnap.data().isAdmin;
+// Atualiza Global Stats
+async function updateGlobal() {
+  const snapshot = await db.collection("usuarios").get();
+  let green = 0, red = 0;
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if(data.status === "green") green++;
+    if(data.status === "red") red++;
+  });
+  globalStats.textContent = `Global: ${green} Green | ${red} Red`;
+}
 
-    // Mostrar botão ADM
-    if(isAdmin) document.getElementById("btnADM").style.display = "inline-block";
-    else document.getElementById("btnADM").style.display = "none";
+// Gerar ação
+function gerar(tipo) {
+  const x = Math.random() * 3;
+  resultDiv.textContent = `${tipo} ${x.toFixed(2)}X`;
+}
 
-    // Contador global
-    const refGlobal = doc(db, "historico", "global");
-    onSnapshot(refGlobal, (docSnap)=>{
-      if(docSnap.exists()){
-        document.getElementById("contadorGlobal").innerText = "Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
-      }
-    });
+// Abrir painel ADM
+async function openAdmin() {
+  mainScreen.style.display = "none";
+  adminScreen.style.display = "block";
+  usersList.innerHTML = "";
+  const snapshot = await db.collection("usuarios").get();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.textContent = `${data.email} - ADM: ${data.isAdmin ? "Sim" : "Não"} - Status: ${data.status || "Nenhum"}`;
+    usersList.appendChild(div);
+  });
+}
+
+// Login
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const userDoc = await db.collection("usuarios").doc(email).get();
+  if(userDoc.exists) {
+    currentUser = userDoc.data();
+    loginScreen.style.display = "none";
+    mainScreen.style.display = "block";
+    if(currentUser.isAdmin) {
+      adminPanelBtn.style.display = "inline-block";
+    }
+    updateGlobal();
   } else {
-    document.getElementById("login").style.display = "flex";
-    document.getElementById("painel").style.display = "none";
+    alert("Usuário não encontrado!");
   }
 });
 
-// BOTÃO ADM
-window.irPainelADM = async () => {
-  document.getElementById("painel").style.display = "none";
-  document.getElementById("painelADM").style.display = "block";
+// Logout
+logoutBtn.addEventListener("click", () => {
+  mainScreen.style.display = "none";
+  loginScreen.style.display = "block";
+  emailInput.value = "";
+  passwordInput.value = "";
+  currentUser = null;
+});
 
-  const lista = document.getElementById("listaUsuarios");
-  lista.innerHTML = "<h3>Carregando usuários...</h3>";
+// Botões
+adminPanelBtn.addEventListener("click", openAdmin);
+backBtn.addEventListener("click", () => {
+  adminScreen.style.display = "none";
+  mainScreen.style.display = "block";
+});
+tigreBtn.addEventListener("click", () => gerar("TIGRE"));
+touroBtn.addEventListener("click", () => gerar("TOURO"));
+aviatorBtn.addEventListener("click", () => gerar("AVIATOR"));
 
-  const usuariosCol = collection(db, "usuarios");
-  onSnapshot(usuariosCol, (snap)=>{
-    lista.innerHTML = "<h2>Usuários:</h2>";
-    snap.forEach(docu=>{
-      const data = docu.data();
-      lista.innerHTML += `<p>${data.email} - Admin: ${data.isAdmin}</p>`;
-    });
-  });
-};
-
-// VOLTAR DO ADM
-window.voltarPainel = () => {
-  document.getElementById("painelADM").style.display = "none";
-  document.getElementById("painel").style.display = "block";
-};
-
-// ===== FUNÇÕES DE JOGO =====
-// Aqui você pode adicionar o código do "Tigre", "Touro", "Aviator" que você já tinha
+// Atualização em tempo real
+db.collection("usuarios").onSnapshot(updateGlobal);
