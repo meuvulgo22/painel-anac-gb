@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Config Firebase
 const firebaseConfig = {
@@ -52,12 +52,10 @@ onAuthStateChanged(auth,user=>{
     loginDiv.style.display="none";
     cadastroDiv.style.display="none";
     painelDiv.style.display="block";
-    // BOTÃO ADM
-    if(user.email==="gbx100k@gmail.com"){
-      btnPainelADM.style.display="block";
-    }else{
-      btnPainelADM.style.display="none";
-    }
+
+    // Botão ADM apenas para admin
+    btnPainelADM.style.display = (user.email === "gbx100k@gmail.com") ? "block" : "none";
+
   } else {
     loginDiv.style.display="flex";
     painelDiv.style.display="none";
@@ -179,7 +177,6 @@ async function carregarUsuarios(){
 window.mudarSenha=async function(uid){
   const nova = prompt("Digite a nova senha para "+uid);
   if(nova){
-    // Aqui você precisaria do Auth admin SDK na real, mas no front só podemos pedir pra user mudar senha se for ele mesmo
     alert("No front-end você não pode alterar a senha de outros usuários diretamente sem Admin SDK. Use Firebase Console para isso.");
   }
 }
