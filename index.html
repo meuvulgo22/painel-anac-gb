@@ -20,7 +20,7 @@
 </div>
 
 <!-- CADASTRO -->
-<div id="cadastro">
+<div id="cadastro" style="display:none;">
   <div class="cadastro-box">
     <h2>Cadastro</h2>
     <input type="email" id="emailCadastro" placeholder="Email">
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<!-- PAINEL USUÁRIO -->
+<!-- PAINEL NORMAL -->
 <div id="painel">
   <div class="topo">
     <h1>ANAC/GB</h1>
@@ -67,14 +67,10 @@
 </div>
 
 <!-- PAINEL ADM -->
-<div id="painelADM">
-  <h1>Painel ADM</h1>
-  <div id="admUsuarios"></div>
-  <div id="admContadores">
-    <button onclick="addGreen()">Green +1</button>
-    <button onclick="addRed()">Red +1</button>
-    <div id="contadorGlobalADM"></div>
-  </div>
+<div id="painelADM" style="display:none;">
+  <h2>Painel ADM</h2>
+  <button onclick="mostrarPainelNormal()">Voltar</button>
+  <div id="usuariosADM"></div>
 </div>
 
 <script type="module" src="main.js"></script>
