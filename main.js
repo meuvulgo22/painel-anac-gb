@@ -19,59 +19,69 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ref = doc(db,"historico","global");
+// ===== LOGIN / CADASTRO =====
+function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
+function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
 
-// ===== LOGIN/CADASTRO =====
-window.mostrarCadastro = () => {document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
-window.mostrarLogin = () => {document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
-
-window.cadastrar = async () => {
+window.cadastrar = async function(){
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try {
+  try{
     await createUserWithEmailAndPassword(auth,email,senha);
     alert("Cadastro realizado!");
     mostrarLogin();
-  } catch(e){ alert(e.message); }
-}
+  }catch(e){alert(e.message);}
+};
 
-window.login = async () => {
+window.login = async function(){
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try { await signInWithEmailAndPassword(auth,email,senha); } 
-  catch(e){ alert(e.message); }
-}
+  try{
+    await signInWithEmailAndPassword(auth,email,senha);
+  }catch(e){alert(e.message);}
+};
 
 // ===== PAINEL =====
-let jogoAtual=null, bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false;
+let jogoAtual=null;
+let bloqueado=false;
+let intervalo;
+let animacaoMulti;
+let avaliacaoFeita=false;
 
 onAuthStateChanged(auth,(user)=>{
   if(user){
     document.getElementById("login").style.display="none";
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
+
     // ADM
-    document.getElementById("contadorGlobal").style.display = (user.email==="gbx100k@gmail.com")?"block":"none";
+    if(user.email === "gbx100k@gmail.com"){
+      document.getElementById("contadorGlobal").style.display="block";
+    } else {
+      document.getElementById("contadorGlobal").style.display="block"; // todos veem contador global
+    }
   } else {
-    document.getElementById("painel").style.display="none";
     document.getElementById("login").style.display="flex";
+    document.getElementById("cadastro").style.display="none";
+    document.getElementById("painel").style.display="none";
   }
 });
 
-// Firestore - Contador global ADM
+// Firestore - Contador global
+const ref = doc(db, "historico", "global");
 onSnapshot(ref,(docSnap)=>{
   if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+    document.getElementById("contadorGlobal").innerText = "Global: " + docSnap.data().green + " Green | " + docSnap.data().red + " Red";
   }
 });
 
-window.addGreen = async () => { await updateDoc(ref,{green:increment(1)}); };
-window.addRed = async () => { await updateDoc(ref,{red:increment(1)}); };
+window.addGreen = async function(){await updateDoc(ref,{green:increment(1)});};
+window.addRed = async function(){await updateDoc(ref,{red:increment(1)});};
 
-// ===== JOGO =====
+// ===== JOGOS =====
 function iniciarTimer(minutos){
   bloqueado=true;
-  let tempoRestante=minutos*60;
+  let tempoRestante = minutos*60;
   clearInterval(intervalo);
   intervalo=setInterval(()=>{
     tempoRestante--;
@@ -113,7 +123,7 @@ window.gerar = function(jogo){
     iniciarTimer(minutos);
   }
 
-  if(jogo==="Tigre" || jogo==="Touro"){
+  if((jogo==="Tigre" || jogo==="Touro")){
     let op=document.getElementById("oportunidade");
     let bet=(jogo==="Tigre")?(Math.random()<0.5?0.40:0.80):(Math.random()<0.5?0.50:1.00);
     let normal=Math.floor(Math.random()*10)+1;
@@ -124,14 +134,13 @@ window.gerar = function(jogo){
   }
 };
 
-window.marcar = function(tipo){
+window.marcar=function(tipo){
   if(avaliacaoFeita||!jogoAtual) return;
   avaliacaoFeita=true;
   document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
   document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
-  document.getElementById("btnGreen").disabled=true;
-  document.getElementById("btnRed").disabled=true;
 
+  // Se ADM, atualiza global
   onAuthStateChanged(auth,(user)=>{
     if(user && user.email==="gbx100k@gmail.com"){
       updateDoc(ref,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
