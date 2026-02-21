@@ -1,5 +1,6 @@
+// ===================== FIREBASE =====================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, collection, getDocs, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Config Firebase
@@ -17,66 +18,46 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ELEMENTOS
+// ===================== ELEMENTOS =====================
 const loginDiv = document.getElementById("login");
 const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
 
-// VARIÁVEIS DO JOGO
-let bloqueado=false;
-let tempoRestante=0;
-let intervalo;
-let animacaoMulti;
-let avaliacaoFeita=false;
-let jogoAtual=null;
+const btnGreen = document.getElementById("btnGreen");
+const btnRed = document.getElementById("btnRed");
+const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
+const tipoEnviado = document.getElementById("tipoEnviado");
+const contadorGlobal = document.getElementById("contadorGlobal");
 
-// FUNÇÕES LOGIN/CADASTRO
-function mostrarCadastro(){loginDiv.style.display="none"; cadastroDiv.style.display="flex";}
-function mostrarLogin(){cadastroDiv.style.display="none"; loginDiv.style.display="flex";}
+// ===================== LOGIN / CADASTRO =====================
+function mostrarCadastro(){ loginDiv.style.display="none"; cadastroDiv.style.display="flex"; }
+function mostrarLogin(){ cadastroDiv.style.display="none"; loginDiv.style.display="flex"; }
 
 window.cadastrar = async function(){
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try{
+  try {
     await createUserWithEmailAndPassword(auth,email,senha);
     alert("Cadastro realizado!");
     mostrarLogin();
-  }catch(e){alert(e.message);}
+  } catch(e){ alert(e.message); }
 }
 
 window.login = async function(){
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try{
+  try {
     await signInWithEmailAndPassword(auth,email,senha);
-  }catch(e){alert(e.message);}
+  } catch(e){ alert(e.message); }
 }
 
-// ===== CONTADOR GLOBAL =====
-const refGlobal = doc(db,"historico","global");
-onSnapshot(refGlobal,docSnap=>{
-  if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
-  }
-});
-
-window.addGreen = async ()=>{await updateDoc(refGlobal,{green:increment(1)});}
-window.addRed = async ()=>{await updateDoc(refGlobal,{red:increment(1)});}
-
-// ===== AUTENTICAÇÃO E PAINEL =====
-// Persistência automática: se o usuário já estiver logado, mostra painel direto
+// Persistência de login
 onAuthStateChanged(auth, user => {
   if(user){
     loginDiv.style.display="none";
     cadastroDiv.style.display="none";
     painelDiv.style.display="block";
-
-    // Deixa os botões de avaliação já visíveis sem precisar clicar
     document.getElementById("avaliacao").style.display="block";
-
-    // Se tiver Aviator gerado antes, mantém visível (opcional)
-    if(jogoAtual === "aviator") document.getElementById("aviatorVisual").style.display="block";
-
   } else {
     loginDiv.style.display="flex";
     cadastroDiv.style.display="none";
@@ -84,23 +65,41 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// ===== JOGO =====
+// ===================== CONTADOR GLOBAL =====================
+const refGlobal = doc(db,"historico","global");
+onSnapshot(refGlobal, docSnap => {
+  if(docSnap.exists()){
+    contadorGlobal.innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+  }
+});
+
+async function addGreen(){ await updateDoc(refGlobal,{green:increment(1)}); }
+async function addRed(){ await updateDoc(refGlobal,{red:increment(1)}); }
+
+// ===================== JOGO =====================
+let bloqueado=false;
+let tempoRestante=0;
+let intervalo;
+let animacaoMulti;
+let avaliacaoFeita=false;
+let jogoAtual=null;
+
 window.gerar = function(jogo){
-  if(bloqueado){alert("Aguarde o tempo acabar."); return;}
+  if(bloqueado){ alert("Aguarde o tempo acabar."); return; }
+
   jogoAtual = jogo.toLowerCase();
-
   document.getElementById("avaliacao").style.display="block";
-  document.getElementById("resultadoAvaliacao").innerText="";
-  document.getElementById("tipoEnviado").innerText="";
+  resultadoAvaliacao.innerText="";
+  tipoEnviado.innerText="";
   avaliacaoFeita=false;
-  document.getElementById("btnGreen").disabled=false;
-  document.getElementById("btnRed").disabled=false;
+  btnGreen.disabled=false;
+  btnRed.disabled=false;
 
-  let minutos=Math.floor(Math.random()*2)+1;
+  let minutos = Math.floor(Math.random()*2)+1;
 
+  // Aviator
   if(jogo==="Aviator"){
     document.getElementById("aviatorVisual").style.display="block";
-
     let multi=1.00;
     let limite=(Math.random()*5.45 + 1).toFixed(2);
     clearInterval(animacaoMulti);
@@ -109,13 +108,12 @@ window.gerar = function(jogo){
       document.getElementById("multiplicador").innerText=multi.toFixed(2)+"X";
       if(multi>=limite){ clearInterval(animacaoMulti); }
     },100);
-
     iniciarTimer(minutos);
   }
 
+  // Tigre / Touro
   if(jogo==="Tigre" || jogo==="Touro"){
     let op=document.getElementById("oportunidade");
-
     let bet = (jogo==="Tigre") ? (Math.random()<0.5?0.40:0.80) : (Math.random()<0.5?0.50:1.00);
     let normal=Math.floor(Math.random()*10)+1;
     let turbo=Math.floor(Math.random()*10)+1;
@@ -133,6 +131,7 @@ window.gerar = function(jogo){
   }
 }
 
+// ===================== TIMER =====================
 function iniciarTimer(minutos){
   bloqueado=true;
   tempoRestante=minutos*60;
@@ -144,26 +143,26 @@ function iniciarTimer(minutos){
       clearInterval(intervalo);
       bloqueado=false;
       avaliacaoFeita=false;
-      document.getElementById("resultadoAvaliacao").innerText="";
-      document.getElementById("tipoEnviado").innerText="";
-      document.getElementById("btnGreen").disabled=false;
-      document.getElementById("btnRed").disabled=false;
+      resultadoAvaliacao.innerText="";
+      tipoEnviado.innerText="";
+      btnGreen.disabled=false;
+      btnRed.disabled=false;
       document.getElementById("timer").innerText="";
     }
   },1000);
 }
 
-// ===== AVALIAÇÃO =====
-window.marcar=function(tipo){
+// ===================== AVALIAÇÃO =====================
+window.marcar = function(tipo){
   if(avaliacaoFeita) return;
-
   avaliacaoFeita=true;
-  document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
-  document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
 
-  document.getElementById("btnGreen").disabled=true;
-  document.getElementById("btnRed").disabled=true;
+  resultadoAvaliacao.innerText="✅ Avaliação enviada!";
+  tipoEnviado.innerText="Enviada como "+tipo;
 
-  // Atualiza contador global automaticamente
-  if(tipo==="GREEN") addGreen(); else addRed();
+  btnGreen.disabled=true;
+  btnRed.disabled=true;
+
+  if(tipo==="GREEN") addGreen();
+  else addRed();
 }
