@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -11,80 +12,74 @@ const firebaseConfig = {
   appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d",
   measurementId: "G-HG4KDJBP3G"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// LOGIN / CADASTRO
+// ===== LOGIN/CADASTRO =====
 function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
 function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
 
-window.cadastrar = async () => {
+window.cadastrar = async function(){
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try {
+  try{
     const userCredential = await createUserWithEmailAndPassword(auth,email,senha);
-    await setDoc(doc(db,"usuarios",userCredential.user.uid), {email: email});
+    // cria doc do usuário
+    await setDoc(doc(db,"usuarios",userCredential.user.uid),{email:email});
     alert("Cadastro realizado!");
     mostrarLogin();
-  } catch(e){alert(e.message);}
+  }catch(e){alert(e.message);}
 };
 
-window.login = async () => {
+window.login = async function(){
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try { await signInWithEmailAndPassword(auth,email,senha); }
+  try{ await signInWithEmailAndPassword(auth,email,senha); }
   catch(e){alert(e.message);}
 };
 
-// PAINEL / ADM
-onAuthStateChanged(auth, async (user)=>{
+// ===== AUTENTICAÇÃO =====
+onAuthStateChanged(auth, async(user)=>{
   if(user){
-    document.getElementById("login").style.display="none";
-    document.getElementById("cadastro").style.display="none";
-    document.getElementById("painel").style.display="block";
-
-    if(user.email === "gbx100k@gmail.com"){
-      document.getElementById("btnADMPanel").style.display="block";
+    const email = user.email;
+    if(email==="gbx100k@gmail.com"){
+      document.getElementById("painelADM").style.display="flex";
+      document.getElementById("login").style.display="none";
+      document.getElementById("cadastro").style.display="none";
+      // Lista todos os usuários
+      const usuariosRef = collection(db,"usuarios");
+      const snapshot = await getDocs(usuariosRef);
+      let html="";
+      snapshot.forEach(doc=>{html+=`<p>${doc.data().email}</p>`});
+      document.getElementById("admUsuarios").innerHTML=html;
     } else {
-      document.getElementById("btnADMPanel").style.display="none";
+      document.getElementById("painel").style.display="block";
+      document.getElementById("login").style.display="none";
+      document.getElementById("cadastro").style.display="none";
     }
   }
 });
 
-window.mostrarADM = async () => {
-  document.getElementById("painel").style.display="none";
-  document.getElementById("painelADM").style.display="flex";
-
-  const listaDiv = document.getElementById("listaUsuarios");
-  listaDiv.innerHTML = "<h2>Usuários cadastrados:</h2>";
-
-  const querySnapshot = await getDocs(collection(db,"usuarios"));
-  querySnapshot.forEach((docu)=>{
-    const div = document.createElement("div");
-    div.innerText = docu.data().email;
-    listaDiv.appendChild(div);
-  });
-};
-
-window.voltarPainel = () => {
-  document.getElementById("painelADM").style.display="none";
-  document.getElementById("painel").style.display="block";
-};
-
-// CONTADOR GLOBAL
+// ===== CONTADOR GLOBAL =====
 const ref = doc(db,"historico","global");
 onSnapshot(ref,(docSnap)=>{
   if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
+    document.getElementById("contadorGlobal").innerText=`Global: ${docSnap.data().green} Green | ${docSnap.data().red} Red`;
+    document.getElementById("contadorGlobalADM").innerText=`Global: ${docSnap.data().green} Green | ${docSnap.data().red} Red`;
   }
 });
 
-window.addGreen = async () => { await updateDoc(ref,{green: increment(1)}); };
-window.addRed = async () => { await updateDoc(ref,{red: increment(1)}); };
+window.addGreen = async function(){await updateDoc(ref,{green:increment(1)});};
+window.addRed = async function(){await updateDoc(ref,{red:increment(1)});};
 
-// FUNÇÕES JOGO
-let bloqueado=false, intervalo, animacaoMulti, avaliacaoFeita=false, jogoAtual=null;
+// ===== JOGO =====
+let bloqueado=false;
+let intervalo;
+let animacaoMulti;
+let avaliacaoFeita=false;
+let jogoAtual=null;
 
 window.gerar = function(jogo){
   if(bloqueado){alert("Aguarde o tempo acabar."); return;}
@@ -142,16 +137,10 @@ function iniciarTimer(minutos){
 }
 
 window.marcar = function(tipo){
-  if(avaliacaoFeita||!jogoAtual) return;
+  if(avaliacaoFeita || !jogoAtual) return;
   avaliacaoFeita=true;
   document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
   document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
   document.getElementById("btnGreen").disabled=true;
   document.getElementById("btnRed").disabled=true;
-
-  onAuthStateChanged(auth,(user)=>{
-    if(user && user.email==="gbx100k@gmail.com"){
-      updateDoc(ref,(tipo==="GREEN")?{green: increment(1)}:{red: increment(1)});
-    }
-  });
 };
