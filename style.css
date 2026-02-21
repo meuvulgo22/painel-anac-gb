@@ -1,45 +1,44 @@
-body {
-  background: repeating-linear-gradient(
-    45deg,
-    black,
-    black 20px,
-    #1a1a1a 20px,
-    #1a1a1a 40px
-  );
-  color: #f5f5f5;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{background:#000;color:#fff;overflow-x:hidden;}
+body::before{
+content:"";
+position:fixed;width:200%;height:200%;
+background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
+background-size:60px 60px;
+animation:move 20s linear infinite;
+z-index:-1;
 }
+@keyframes move{from{transform:translate(0,0);}to{transform:translate(-200px,-200px);}}
 
-input {
-  padding: 10px;
-  margin: 5px;
-  width: 200px;
-}
+.login-box{background:#0d0d0d;padding:40px;border-radius:20px;border:1px solid #c9a227;box-shadow:0 0 30px #c9a22755;text-align:center;width:320px;}
+.login-box h2{margin-bottom:25px;color:#c9a227;letter-spacing:4px;}
+.login-box input{width:100%;padding:14px;margin-bottom:20px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;}
+.login-box button{width:100%;padding:14px;border:none;border-radius:10px;background:#c9a227;color:#000;font-weight:bold;cursor:pointer;}
 
-button {
-  background: black;
-  color: gold;
-  border: 2px solid gold;
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
+#painel{display:none;padding:20px;}
+.topo{text-align:center;margin-bottom:25px;}
+.topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
+.topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;border-radius:12px;background:#111;color:#c9a227;font-weight:bold;cursor:pointer;}
+#timer{margin-top:10px;color:#aaa;font-size:13px;}
+#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:300px;font-size:14px;}
 
-#global-stats {
-  font-weight: bold;
-  margin: 10px 0;
-}
+#avaliacao{display:none;text-align:center;margin-top:15px;}
+.av-btn{padding:10px 20px;margin:5px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;}
+.green{background:#2e7d32;color:#fff;}
+.red{background:#c62828;color:#fff;}
+#resultadoAvaliacao{margin-top:10px;font-weight:bold;}
+#tipoEnviado{margin-top:5px;font-size:13px;}
 
-#result {
-  margin-top: 20px;
-  font-size: 1.2em;
-}
-
-#users-list div {
-  margin: 5px 0;
-  padding: 5px;
-  border-bottom: 1px solid gold;
-}
+#aviatorVisual{display:none;text-align:center;margin-top:20px;}
+.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
+.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
+.plane:nth-child(1){top:20%;animation-duration:7s;}
+.plane:nth-child(2){top:50%;animation-duration:9s;}
+.plane:nth-child(3){top:75%;animation-duration:6s;}
+@keyframes fly{from{left:-50px;}to{left:110%;}}
+.aviator-title{background:#e53935;color:#fff;padding:12px;border-radius:10px;font-weight:bold;margin-bottom:25px;position:relative;z-index:2;}
+.circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
+@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
+.info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
+.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
+iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}

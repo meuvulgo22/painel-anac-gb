@@ -1,99 +1,79 @@
-// Config Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// CONFIG FIREBASE
 const firebaseConfig = {
-  // COLE AQUI SEU FIREBASE CONFIG
+  apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
+  authDomain: "painel-anac-gb.firebaseapp.com",
+  projectId: "painel-anac-gb",
+  storageBucket: "painel-anac-gb.appspot.com",
+  messagingSenderId: "941890806312",
+  appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Elementos
-const loginScreen = document.getElementById("login-screen");
-const mainScreen = document.getElementById("main-screen");
-const adminScreen = document.getElementById("admin-screen");
+// ===== LOGIN/CADASTRO =====
+function mostrarCadastro(){ document.getElementById("login").style.display="none"; document.getElementById("cadastro").style.display="flex"; }
+function mostrarLogin(){ document.getElementById("cadastro").style.display="none"; document.getElementById("login").style.display="flex"; }
 
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const adminPanelBtn = document.getElementById("adminPanelBtn");
-const backBtn = document.getElementById("backBtn");
-
-const globalStats = document.getElementById("global-stats");
-const resultDiv = document.getElementById("result");
-const usersList = document.getElementById("users-list");
-
-const tigreBtn = document.getElementById("tigreBtn");
-const touroBtn = document.getElementById("touroBtn");
-const aviatorBtn = document.getElementById("aviatorBtn");
-
-let currentUser = null;
-
-// Atualiza Global Stats
-async function updateGlobal() {
-  const snapshot = await db.collection("usuarios").get();
-  let green = 0, red = 0;
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    if(data.status === "green") green++;
-    if(data.status === "red") red++;
-  });
-  globalStats.textContent = `Global: ${green} Green | ${red} Red`;
+window.cadastrar = async function(){
+  const email = document.getElementById("emailCadastro").value;
+  const senha = document.getElementById("senhaCadastro").value;
+  try{
+    await createUserWithEmailAndPassword(auth,email,senha);
+    alert("Cadastro realizado!");
+    mostrarLogin();
+  }catch(e){ alert(e.message); }
 }
 
-// Gerar ação
-function gerar(tipo) {
-  const x = Math.random() * 3;
-  resultDiv.textContent = `${tipo} ${x.toFixed(2)}X`;
+window.login = async function(){
+  const email = document.getElementById("emailLogin").value;
+  const senha = document.getElementById("senhaLogin").value;
+  try{
+    await signInWithEmailAndPassword(auth,email,senha);
+  }catch(e){ alert(e.message); }
 }
 
-// Abrir painel ADM
-async function openAdmin() {
-  mainScreen.style.display = "none";
-  adminScreen.style.display = "block";
-  usersList.innerHTML = "";
-  const snapshot = await db.collection("usuarios").get();
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.textContent = `${data.email} - ADM: ${data.isAdmin ? "Sim" : "Não"} - Status: ${data.status || "Nenhum"}`;
-    usersList.appendChild(div);
-  });
-}
+// ===== AUTENTICAÇÃO =====
+onAuthStateChanged(auth, user=>{
+  if(user){
+    document.getElementById("login").style.display="none";
+    document.getElementById("cadastro").style.display="none";
+    document.getElementById("painel").style.display="block";
 
-// Login
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const userDoc = await db.collection("usuarios").doc(email).get();
-  if(userDoc.exists) {
-    currentUser = userDoc.data();
-    loginScreen.style.display = "none";
-    mainScreen.style.display = "block";
-    if(currentUser.isAdmin) {
-      adminPanelBtn.style.display = "inline-block";
+    // ADM
+    if(user.email === "gbx100k@gmail.com"){
+      const admBtn = document.getElementById("admBtnContainer");
+      admBtn.innerHTML = `<button onclick="abrirADM()">Abrir Painel ADM</button>`;
     }
-    updateGlobal();
-  } else {
-    alert("Usuário não encontrado!");
+
+    // Atualizar contador global em tempo real
+    const refGlobal = doc(db,"historico","global");
+    onSnapshot(refGlobal, snap=>{
+      if(snap.exists()){
+        document.getElementById("resultadoAvaliacao").innerText = `Global: ${snap.data().green} Green | ${snap.data().red} Red`;
+      }
+    });
   }
 });
 
-// Logout
-logoutBtn.addEventListener("click", () => {
-  mainScreen.style.display = "none";
-  loginScreen.style.display = "block";
-  emailInput.value = "";
-  passwordInput.value = "";
-  currentUser = null;
-});
+// ===== PAINEL ADM =====
+window.abrirADM = function(){
+  document.getElementById("painel").style.display="none";
+  document.getElementById("painelADM").style.display="block";
+}
 
-// Botões
-adminPanelBtn.addEventListener("click", openAdmin);
-backBtn.addEventListener("click", () => {
-  adminScreen.style.display = "none";
-  mainScreen.style.display = "block";
-});
-tigreBtn.addEventListener("click", () => gerar("TIGRE"));
-touroBtn.addEventListener("click", () => gerar("TOURO"));
-aviatorBtn.addEventListener("click", () => gerar("AVIATOR"));
+window.mostrarUsuarios = async function(){
+  const lista = document.getElementById("listaUsuarios");
+  lista.innerHTML = "<b>Carregando usuários...</b>";
+  const usersCol = collection(db,"users");
+  const snap = await getDoc(doc(db,"historico","global")); // só pra demo
+  // Aqui você vai buscar usuários reais via Firestore, ex: users collection
+  lista.innerHTML = "<b>Lista de usuários carregada</b>";
+}
 
-// Atualização em tempo real
-db.collection("usuarios").onSnapshot(updateGlobal);
+// ===== FUNÇÕES DE JOGO =====
+// Copiar do seu código antigo: gerar(), marcar(), iniciarTimer()...
