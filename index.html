@@ -14,39 +14,54 @@
     <input type="email" id="email" placeholder="Digite seu email">
     <input type="password" id="senha" placeholder="Digite a senha">
     <button onclick="entrar()">ENTRAR</button>
+    <button onclick="registrar()">REGISTRAR</button>
   </div>
 </div>
 
 <div id="painel">
   <div class="topo">
     <h1>ANAC/GB</h1>
-    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
-    <button onclick="gerar('Touro')">GERAR TOURO</button>
-    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    <div id="buttonsGerar">
+      <button onclick="gerar('Tigre')">GERAR TIGRE</button>
+      <button onclick="gerar('Touro')">GERAR TOURO</button>
+      <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    </div>
     <div id="timer"></div>
   </div>
 
-  <div id="greenRedCard">
-    <div id="green" class="av-btn green">0</div>
-    <div id="red" class="av-btn red">0</div>
-  </div>
+  <div id="oportunidade"></div>
 
+  <!-- Green / Red -->
   <div id="avaliacao">
-    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
-    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
+    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">GREEN ✅</button>
+    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">RED ❌</button>
     <div id="resultadoAvaliacao"></div>
     <div id="tipoEnviado"></div>
   </div>
 
-  <div id="admPanel">
-    <h2>PAINEL ADM</h2>
-    <table id="usersTable">
-      <tr><th>Email</th><th>ADM</th><th>Ações</th></tr>
-    </table>
+  <!-- Aviator -->
+  <div id="aviatorVisual">
+    <div class="aviator-box">
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="aviator-title">AVIATOR</div>
+      <div class="circle"><span id="multiplicador">1.00X</span></div>
+      <div class="info-text">No máximo 1 até 3 tentativas!</div>
+    </div>
   </div>
 
+  <!-- Iframe -->
   <div class="frame-area">
     <iframe src="https://51graus.vip/?id=655031265"></iframe>
+  </div>
+
+  <!-- Painel ADM -->
+  <div id="painelADM" style="display:none;">
+    <h2>PAINEL ADM</h2>
+    <div id="listaUsuarios"></div>
+    <input type="email" id="novoADM" placeholder="Escolher ADM">
+    <button onclick="tornarADM()">Definir ADM</button>
   </div>
 </div>
 
