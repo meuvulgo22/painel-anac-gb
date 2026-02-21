@@ -6,12 +6,13 @@
 <title>ANAC/GB VIP</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- LOGIN -->
 <div id="login">
   <div class="login-box">
-    <h2>ANAC/GB VIP</h2>
+    <h2>Login</h2>
     <input type="email" id="emailLogin" placeholder="Email">
     <input type="password" id="senhaLogin" placeholder="Senha">
     <button onclick="login()">Entrar</button>
@@ -21,7 +22,7 @@
 
 <!-- CADASTRO -->
 <div id="cadastro" style="display:none;">
-  <div class="login-box">
+  <div class="cadastro-box">
     <h2>Cadastro</h2>
     <input type="email" id="emailCadastro" placeholder="Email">
     <input type="password" id="senhaCadastro" placeholder="Senha">
@@ -30,15 +31,15 @@
   </div>
 </div>
 
-<!-- PAINEL -->
-<div id="painel">
+<!-- PAINEL NORMAL -->
+<div id="painel" style="display:none;">
+
   <div class="topo">
     <h1>ANAC/GB</h1>
     <button onclick="gerar('Tigre')">GERAR TIGRE</button>
     <button onclick="gerar('Touro')">GERAR TOURO</button>
     <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
     <div id="timer"></div>
-    <div id="admBtnContainer" style="margin-top:10px;"></div>
   </div>
 
   <div id="oportunidade"></div>
@@ -49,6 +50,8 @@
     <div id="resultadoAvaliacao"></div>
     <div id="tipoEnviado"></div>
   </div>
+
+  <div id="contadorGlobal"></div>
 
   <div id="aviatorVisual">
     <div class="aviator-box">
@@ -64,13 +67,17 @@
   <div class="frame-area">
     <iframe src="https://51graus.vip/?id=655031265"></iframe>
   </div>
+
+  <!-- BOTÃO PARA PAINEL ADM -->
+  <button id="btnPainelADM" style="display:none;" onclick="abrirADM()">Abrir Painel ADM</button>
+
 </div>
 
-<!-- TELA ADM -->
-<div id="painelADM" style="display:none; padding:20px;">
+<!-- PAINEL ADM -->
+<div id="painelADM" style="display:none;">
   <h2>Painel ADM</h2>
-  <button onclick="mostrarUsuarios()">Mostrar Usuários</button>
-  <div id="listaUsuarios" style="margin-top:20px;"></div>
+  <button onclick="fecharADM()">Voltar</button>
+  <div id="listaUsuarios"></div>
 </div>
 
 <script type="module" src="main.js"></script>
