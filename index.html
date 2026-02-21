@@ -9,16 +9,30 @@
 
 <body>
 
+<!-- LOGIN -->
 <div id="login">
   <div class="login-box">
-    <h2>ANAC/GB VIP</h2>
-    <input type="password" id="senha" placeholder="Digite a senha">
-    <button onclick="entrar()">ENTRAR</button>
+    <h2>Login</h2>
+    <input type="email" id="emailLogin" placeholder="Email">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
   </div>
 </div>
 
-<div id="painel">
+<!-- CADASTRO -->
+<div id="cadastro" style="display:none;">
+  <div class="cadastro-box">
+    <h2>Cadastro</h2>
+    <input type="email" id="emailCadastro" placeholder="Email">
+    <input type="password" id="senhaCadastro" placeholder="Senha">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
+  </div>
+</div>
 
+<!-- PAINEL -->
+<div id="painel" style="display:none;">
   <div class="topo">
     <h1>ANAC/GB</h1>
     <button onclick="gerar('Tigre')">GERAR TIGRE</button>
@@ -29,12 +43,11 @@
 
   <div id="oportunidade"></div>
 
-  <!-- Avaliação já visível sem precisar clicar -->
   <div id="avaliacao">
-    <button id="btnGreen" class="av-btn green" onclick="marcar('GREEN')">DEU GREEN ✅</button>
-    <button id="btnRed" class="av-btn red" onclick="marcar('RED')">DEU RED ❌</button>
-    <div id="resultadoAvaliacao">✅ Avaliação enviada!</div>
-    <div id="tipoEnviado">Enviada como GREEN</div>
+    <button id="btnGreen" class="av-btn green">DEU GREEN ✅</button>
+    <button id="btnRed" class="av-btn red">DEU RED ❌</button>
+    <div id="resultadoAvaliacao"></div>
+    <div id="tipoEnviado"></div>
   </div>
 
   <div id="aviatorVisual">
@@ -43,19 +56,16 @@
       <div class="plane">✈️</div>
       <div class="plane">✈️</div>
       <div class="aviator-title">AVIATOR</div>
-      <div class="circle">
-        <span id="multiplicador">1.00X</span>
-      </div>
-      <div class="info-text">no máximo 1 até 3 vezes pra fazer tentativa!</div>
+      <div class="circle"><span id="multiplicador">1.00X</span></div>
+      <div class="info-text">No máximo 1 até 3 vezes pra fazer tentativa!</div>
     </div>
   </div>
 
   <div class="frame-area">
     <iframe src="https://123bet06.com/?id=161145545"></iframe>
   </div>
-
 </div>
 
-<script src="main.js"></script>
+<script type="module" src="main.js"></script>
 </body>
 </html>
