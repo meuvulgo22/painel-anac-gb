@@ -1,8 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, collection, getDocs, updateDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, onSnapshot, increment } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// CONFIG FIREBASE
+// Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -14,83 +16,146 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-const refGlobal = doc(db, "historico", "global");
-const refUsers = collection(db, "users");
+const auth = getAuth(app);
 
-// LOGIN/CADASTRO
-window.mostrarCadastro = () => { document.getElementById("login").style.display="none"; document.getElementById("cadastro").style.display="flex"; }
-window.mostrarLogin = () => { document.getElementById("cadastro").style.display="none"; document.getElementById("login").style.display="flex"; }
+const refGlobal = doc(db,"historico","global");
 
-window.cadastrar = async () => {
-  const email = document.getElementById("emailCadastro").value;
-  const senha = document.getElementById("senhaCadastro").value;
-  try { await createUserWithEmailAndPassword(auth,email,senha); alert("Usuário criado!"); mostrarLogin(); }
-  catch(e){ alert(e.message); }
+// ===== LOGIN/CADASTRO =====
+function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
+function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
+
+window.cadastrar=async function(){
+  const email=document.getElementById("emailCadastro").value;
+  const senha=document.getElementById("senhaCadastro").value;
+  try{
+    await createUserWithEmailAndPassword(auth,email,senha);
+    alert("Cadastro realizado!");
+    mostrarLogin();
+  }catch(e){alert(e.message);}
 }
 
-window.login = async () => {
-  const email = document.getElementById("emailLogin").value;
-  const senha = document.getElementById("senhaLogin").value;
-  try { await signInWithEmailAndPassword(auth,email,senha); }
-  catch(e){ alert(e.message); }
+window.login=async function(){
+  const email=document.getElementById("emailLogin").value;
+  const senha=document.getElementById("senhaLogin").value;
+  try{
+    await signInWithEmailAndPassword(auth,email,senha);
+  }catch(e){alert(e.message);}
 }
 
-// VERIFICA USUÁRIO LOGADO
-onAuthStateChanged(auth, async (user)=>{
+// ===== AUTENTICAÇÃO =====
+onAuthStateChanged(auth,user=>{
   if(user){
     document.getElementById("login").style.display="none";
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
 
-    // ADM
-    if(user.email==="gbx100k@gmail.com") document.getElementById("btnADM").style.display="inline-block";
-    else document.getElementById("btnADM").style.display="none";
-
-    loadUsers();
+    if(user.email==="gbx100k@gmail.com"){
+      document.getElementById("painelADM").style.display="block";
+      carregarUsuarios();
+    }
   }
 });
 
-// GREEN/RED GLOBAL
-onSnapshot(refGlobal, docSnap=>{
+// ===== GLOBAL =====
+onSnapshot(refGlobal,docSnap=>{
   if(docSnap.exists()){
-    document.getElementById("green").innerText = docSnap.data().green;
-    document.getElementById("red").innerText = docSnap.data().red;
+    document.getElementById("green").innerText=docSnap.data().green;
+    document.getElementById("red").innerText=docSnap.data().red;
   }
 });
-window.addGreen = async()=>{ await updateDoc(refGlobal,{green:increment(1)}); }
-window.addRed = async()=>{ await updateDoc(refGlobal,{red:increment(1)}); }
 
-// CARREGAR USUÁRIOS PARA ADM
-async function loadUsers(){
-  const lista = document.getElementById("userList");
-  if(!lista) return;
-  lista.innerHTML="";
-  const snapshot = await getDocs(refUsers);
-  snapshot.forEach(docu=>{
-    const data = docu.data();
-    const li = document.createElement("li");
-    li.innerHTML = `${data.email} - Admin: ${data.isAdmin ? "Sim" : "Não"} 
-      <button onclick="toggleAdmin('${docu.id}',${data.isAdmin})">Alterar Admin</button> 
-      <button onclick="resetSenha('${docu.id}')">Alterar Senha</button>`;
-    lista.appendChild(li);
+window.addGreen=async()=>await updateDoc(refGlobal,{green:increment(1)});
+window.addRed=async()=>await updateDoc(refGlobal,{red:increment(1)});
+
+// ===== JOGO =====
+let bloqueado=false,intervalo,animacaoMulti,avaliacaoFeita=false;
+
+window.gerar=function(jogo){
+  if(bloqueado){alert("Aguarde o tempo acabar."); return;}
+  document.getElementById("avaliacao").style.display="block";
+  document.getElementById("resultadoAvaliacao").innerText="";
+  document.getElementById("tipoEnviado").innerText="";
+  avaliacaoFeita=false;
+  document.getElementById("btnGreen").disabled=false;
+  document.getElementById("btnRed").disabled=false;
+
+  let minutos=Math.floor(Math.random()*2)+1;
+
+  if(jogo==="Aviator"){
+    document.getElementById("aviatorVisual").style.display="block";
+    let multi=1.0;
+    let limite=(Math.random()*5.45+1).toFixed(2);
+    clearInterval(animacaoMulti);
+    animacaoMulti=setInterval(()=>{
+      multi+=0.05;
+      document.getElementById("multiplicador").innerText=multi.toFixed(2)+"X";
+      if(multi>=limite) clearInterval(animacaoMulti);
+    },100);
+    iniciarTimer(minutos);
+  }
+
+  if(jogo==="Tigre" || jogo==="Touro"){
+    let op=document.getElementById("oportunidade");
+    let bet=(jogo==="Tigre"?Math.random()<0.5?0.40:0.80:Math.random()<0.5?0.50:1.0);
+    let normal=Math.floor(Math.random()*10)+1;
+    let turbo=Math.floor(Math.random()*10)+1;
+    op.innerHTML=`<b>✅ OPORTUNIDADE GERADA!</b><br><br>🦁 ${jogo} 🦁<br>⏰ Válido por: ${minutos} minuto(s)<br>💰 Bet: R$ ${bet.toFixed(2)}<br>👉 ${normal}x Normal<br>⚡ ${turbo}x Turbo`;
+    op.style.display="block";
+    iniciarTimer(minutos);
+  }
+}
+
+function iniciarTimer(minutos){
+  bloqueado=true;
+  let tempoRestante=minutos*60;
+  clearInterval(intervalo);
+  intervalo=setInterval(()=>{
+    tempoRestante--;
+    document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
+    if(tempoRestante<=0){
+      clearInterval(intervalo);
+      bloqueado=false;
+      avaliacaoFeita=false;
+      document.getElementById("resultadoAvaliacao").innerText="";
+      document.getElementById("tipoEnviado").innerText="";
+      document.getElementById("btnGreen").disabled=false;
+      document.getElementById("btnRed").disabled=false;
+      document.getElementById("timer").innerText="";
+    }
+  },1000);
+}
+
+window.marcar=function(tipo){
+  if(avaliacaoFeita) return;
+  avaliacaoFeita=true;
+  document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
+  document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
+  document.getElementById("btnGreen").disabled=true;
+  document.getElementById("btnRed").disabled=true;
+
+  addGreen();
+  addRed();
+}
+
+// ===== PAINEL ADM =====
+async function carregarUsuarios(){
+  const usersCol = collection(db,"users");
+  const snapshot = await getDocs(usersCol);
+  const list = document.getElementById("usuariosList");
+  list.innerHTML="";
+  snapshot.forEach(doc=>{
+    const u=doc.data();
+    const div=document.createElement("div");
+    div.innerHTML=`${u.email} - <button onclick="mudarSenha('${doc.id}')">Alterar Senha</button>`;
+    list.appendChild(div);
   });
 }
 
-// ALTERAR ADMIN
-window.toggleAdmin = async(uid,atual)=>{
-  await updateDoc(doc(db,"users",uid),{isAdmin:!atual});
-  loadUsers();
+window.mudarSenha=async(uid)=>{
+  const nova=prompt("Digite nova senha:");
+  if(nova) await setDoc(doc(db,"users",uid),{senha:nova},{merge:true});
+  alert("Senha alterada!");
 }
 
-// ALTERAR SENHA
-window.resetSenha = async(uid)=>{
-  const nova = prompt("Digite nova senha:");
-  if(!nova) return;
-  await updateDoc(doc(db,"users",uid),{password:nova});
-  alert("Senha alterada no Firestore (Auth precisa reconfiguração manual).");
-}
-
-// ABRIR PAINEL ADM
-window.abrirADM = ()=>{ document.getElementById("admPanel").style.display="block"; }
+window.abrirADM=()=>alert("Tela ADM completa aqui com lista de usuários e funções de modificação.");
