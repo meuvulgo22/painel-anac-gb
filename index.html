@@ -6,7 +6,6 @@
 <title>ANAC/GB VIP</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <!-- LOGIN -->
@@ -21,7 +20,7 @@
 </div>
 
 <!-- CADASTRO -->
-<div id="cadastro" style="display:none;">
+<div id="cadastro">
   <div class="cadastro-box">
     <h2>Cadastro</h2>
     <input type="email" id="emailCadastro" placeholder="Email">
@@ -31,7 +30,7 @@
   </div>
 </div>
 
-<!-- PAINEL -->
+<!-- PAINEL NORMAL -->
 <div id="painel">
   <div class="topo">
     <h1>ANAC/GB</h1>
@@ -49,6 +48,7 @@
     <div id="resultadoAvaliacao"></div>
     <div id="tipoEnviado"></div>
     <div id="contadorGlobal"></div>
+    <button id="btnADMPanel" onclick="mostrarADM()" style="display:none;">Painel ADM</button>
   </div>
 
   <div id="aviatorVisual">
@@ -62,12 +62,16 @@
     </div>
   </div>
 
-  <div class="frame-area">
-    <iframe src="https://51graus.vip/?id=655031265"></iframe>
-  </div>
+  <div class="frame-area"><iframe src="https://51graus.vip/?id=655031265"></iframe></div>
+</div>
+
+<!-- PAINEL ADM -->
+<div id="painelADM">
+  <h1>Painel do ADM</h1>
+  <button onclick="voltarPainel()">Voltar</button>
+  <div id="listaUsuarios"></div>
 </div>
 
 <script type="module" src="main.js"></script>
-
 </body>
 </html>

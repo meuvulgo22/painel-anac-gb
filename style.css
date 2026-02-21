@@ -10,16 +10,21 @@ body::before{
 }
 @keyframes move{from{transform:translate(0,0);}to{transform:translate(-200px,-200px);}}
 
-#login, #cadastro{position:fixed;width:100%;height:100vh;display:flex;justify-content:center;align-items:center;background:#000;z-index:1000;}
+#login, #cadastro, #painel, #painelADM{
+  position:fixed;width:100%;height:100vh;
+  display:flex;justify-content:center;align-items:center;background:#000;z-index:1000;
+}
+#cadastro,#painelADM{display:none;}
+
 .login-box, .cadastro-box{
-  background:#0d0d0d;padding:40px;border-radius:20px;border:1px solid #c9a227;
-  box-shadow:0 0 30px #c9a22755;text-align:center;width:320px;
+  background:#0d0d0d;padding:40px;border-radius:20px;
+  border:1px solid #c9a227;box-shadow:0 0 30px #c9a22755;text-align:center;width:320px;
 }
 .login-box h2, .cadastro-box h2{margin-bottom:25px;color:#c9a227;letter-spacing:4px;}
 .login-box input, .cadastro-box input{
   width:100%;padding:14px;margin-bottom:20px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;
 }
-.login-box button, .cadastro-box button{
+.login-box button, .cadastro-box button, #btnADMPanel{
   width:100%;padding:14px;border:none;border-radius:10px;background:#c9a227;color:#000;font-weight:bold;cursor:pointer;
 }
 
@@ -36,16 +41,5 @@ body::before{
 #resultadoAvaliacao{margin-top:10px;font-weight:bold;}
 #tipoEnviado{margin-top:5px;font-size:13px;}
 #contadorGlobal{margin-top:10px;font-size:14px;color:#c9a227;}
-#aviatorVisual{display:none;text-align:center;margin-top:20px;}
-.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
-.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
-.plane:nth-child(1){top:20%;animation-duration:7s;}
-.plane:nth-child(2){top:50%;animation-duration:9s;}
-.plane:nth-child(3){top:75%;animation-duration:6s;}
-@keyframes fly{from{left:-50px;}to{left:110%;}}
-.aviator-title{background:#e53935;color:#fff;padding:12px;border-radius:10px;font-weight:bold;margin-bottom:25px;position:relative;z-index:2;}
-.circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
-@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
-.info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
-.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
-iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}
+#painelADM{flex-direction:column;text-align:center;}
+#listaUsuarios{margin-top:20px;}

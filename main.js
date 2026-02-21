@@ -1,8 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, updateDoc, onSnapshot, increment } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // CONFIG FIREBASE
 const firebaseConfig = {
@@ -14,90 +12,83 @@ const firebaseConfig = {
   appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d",
   measurementId: "G-HG4KDJBP3G"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ===== LOGIN / CADASTRO =====
+// LOGIN / CADASTRO
 function mostrarCadastro(){document.getElementById("login").style.display="none";document.getElementById("cadastro").style.display="flex";}
 function mostrarLogin(){document.getElementById("cadastro").style.display="none";document.getElementById("login").style.display="flex";}
 
-window.cadastrar = async function(){
+window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  try{
-    await createUserWithEmailAndPassword(auth,email,senha);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth,email,senha);
+    await setDoc(doc(db,"usuarios",userCredential.user.uid), {email: email});
     alert("Cadastro realizado!");
     mostrarLogin();
-  }catch(e){alert(e.message);}
+  } catch(e){alert(e.message);}
 };
 
-window.login = async function(){
+window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  try{
-    await signInWithEmailAndPassword(auth,email,senha);
-  }catch(e){alert(e.message);}
+  try { await signInWithEmailAndPassword(auth,email,senha); }
+  catch(e){alert(e.message);}
 };
 
-// ===== PAINEL =====
-let jogoAtual=null;
-let bloqueado=false;
-let intervalo;
-let animacaoMulti;
-let avaliacaoFeita=false;
-
-onAuthStateChanged(auth,(user)=>{
+// PAINEL / ADM
+onAuthStateChanged(auth, async (user)=>{
   if(user){
     document.getElementById("login").style.display="none";
     document.getElementById("cadastro").style.display="none";
     document.getElementById("painel").style.display="block";
 
-    // ADM
+    // ADM?
     if(user.email === "gbx100k@gmail.com"){
-      document.getElementById("contadorGlobal").style.display="block";
+      document.getElementById("btnADMPanel").style.display="block";
     } else {
-      document.getElementById("contadorGlobal").style.display="block"; // todos veem contador global
+      document.getElementById("btnADMPanel").style.display="none";
     }
-  } else {
-    document.getElementById("login").style.display="flex";
-    document.getElementById("cadastro").style.display="none";
-    document.getElementById("painel").style.display="none";
   }
 });
 
-// Firestore - Contador global
-const ref = doc(db, "historico", "global");
+window.mostrarADM = async () => {
+  document.getElementById("painel").style.display="none";
+  document.getElementById("painelADM").style.display="flex";
+
+  const listaDiv = document.getElementById("listaUsuarios");
+  listaDiv.innerHTML = "<h2>Usuários cadastrados:</h2>";
+
+  const querySnapshot = await getDoc(doc(db,"historico","global"));
+  onSnapshot(doc(db,"usuarios","global"), (snap)=>{
+    // aqui você pode pegar todos os usuários e mostrar
+  });
+};
+
+window.voltarPainel = () => {
+  document.getElementById("painelADM").style.display="none";
+  document.getElementById("painel").style.display="block";
+};
+
+// CONTADOR GLOBAL
+const ref = doc(db,"historico","global");
 onSnapshot(ref,(docSnap)=>{
   if(docSnap.exists()){
-    document.getElementById("contadorGlobal").innerText = "Global: " + docSnap.data().green + " Green | " + docSnap.data().red + " Red";
+    document.getElementById("contadorGlobal").innerText="Global: "+docSnap.data().green+" Green | "+docSnap.data().red+" Red";
   }
 });
 
-window.addGreen = async function(){await updateDoc(ref,{green:increment(1)});};
-window.addRed = async function(){await updateDoc(ref,{red:increment(1)});};
+window.addGreen = async () => { await updateDoc(ref,{green: increment(1)}); };
+window.addRed = async () => { await updateDoc(ref,{red: increment(1)}); };
 
-// ===== JOGOS =====
-function iniciarTimer(minutos){
-  bloqueado=true;
-  let tempoRestante = minutos*60;
-  clearInterval(intervalo);
-  intervalo=setInterval(()=>{
-    tempoRestante--;
-    document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
-    if(tempoRestante<=0){
-      clearInterval(intervalo);
-      bloqueado=false;
-      avaliacaoFeita=false;
-      document.getElementById("resultadoAvaliacao").innerText="";
-      document.getElementById("tipoEnviado").innerText="";
-      document.getElementById("btnGreen").disabled=false;
-      document.getElementById("btnRed").disabled=false;
-      document.getElementById("timer").innerText="";
-    }
-  },1000);
-}
+// FUNCÕES JOGO (Tigre, Touro, Aviator)
+let bloqueado=false;
+let intervalo;
+let animacaoMulti;
+let avaliacaoFeita=false;
+let jogoAtual=null;
 
 window.gerar = function(jogo){
   if(bloqueado){alert("Aguarde o tempo acabar."); return;}
@@ -123,7 +114,7 @@ window.gerar = function(jogo){
     iniciarTimer(minutos);
   }
 
-  if((jogo==="Tigre" || jogo==="Touro")){
+  if(jogo==="Tigre" || jogo==="Touro"){
     let op=document.getElementById("oportunidade");
     let bet=(jogo==="Tigre")?(Math.random()<0.5?0.40:0.80):(Math.random()<0.5?0.50:1.00);
     let normal=Math.floor(Math.random()*10)+1;
@@ -134,16 +125,38 @@ window.gerar = function(jogo){
   }
 };
 
-window.marcar=function(tipo){
+function iniciarTimer(minutos){
+  bloqueado=true;
+  let tempoRestante=minutos*60;
+  clearInterval(intervalo);
+  intervalo=setInterval(()=>{
+    tempoRestante--;
+    document.getElementById("timer").innerText="Nova oportunidade em: "+tempoRestante+"s";
+    if(tempoRestante<=0){
+      clearInterval(intervalo);
+      bloqueado=false;
+      avaliacaoFeita=false;
+      document.getElementById("resultadoAvaliacao").innerText="";
+      document.getElementById("tipoEnviado").innerText="";
+      document.getElementById("btnGreen").disabled=false;
+      document.getElementById("btnRed").disabled=false;
+      document.getElementById("timer").innerText="";
+    }
+  },1000);
+}
+
+window.marcar = function(tipo){
   if(avaliacaoFeita||!jogoAtual) return;
   avaliacaoFeita=true;
   document.getElementById("resultadoAvaliacao").innerText="✅ Avaliação enviada!";
   document.getElementById("tipoEnviado").innerText="Enviada como "+tipo;
+  document.getElementById("btnGreen").disabled=true;
+  document.getElementById("btnRed").disabled=true;
 
-  // Se ADM, atualiza global
+  // Atualiza global se ADM
   onAuthStateChanged(auth,(user)=>{
     if(user && user.email==="gbx100k@gmail.com"){
-      updateDoc(ref,(tipo==="GREEN")?{green:increment(1)}:{red:increment(1)});
+      updateDoc(ref,(tipo==="GREEN")?{green: increment(1)}:{red: increment(1)});
     }
   });
 };
