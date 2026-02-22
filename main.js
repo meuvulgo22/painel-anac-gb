@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, doc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ================= FIREBASE =================
+// 🔥 SUA CONFIG ORIGINAL
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -80,7 +80,7 @@ onAuthStateChanged(auth, (user) => {
 const refGlobal = doc(db, "historico", "global");
 
 onSnapshot(refGlobal, (docSnap) => {
-  if (docSnap.exists() && contadorGlobal) {
+  if (docSnap.exists()) {
     contadorGlobal.innerText =
       "Global: " +
       (docSnap.data().green || 0) +
@@ -90,6 +90,7 @@ onSnapshot(refGlobal, (docSnap) => {
   }
 });
 
+// ================= FUNÇÕES =================
 async function addGreen() {
   await updateDoc(refGlobal, { green: increment(1) });
 }
@@ -98,29 +99,23 @@ async function addRed() {
   await updateDoc(refGlobal, { red: increment(1) });
 }
 
-// ================= MARCAR GREEN / RED =================
-function marcar(tipo) {
-  if (!resultadoAvaliacao) return;
-
+// ================= BOTÕES =================
+btnGreen.addEventListener("click", async () => {
   resultadoAvaliacao.innerText = "Avaliação enviada!";
-  tipoEnviado.innerText = "Resultado: " + tipo;
+  tipoEnviado.innerText = "Resultado: GREEN";
 
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
-  if (tipo === "GREEN") {
-    addGreen();
-  } else {
-    addRed();
-  }
-}
+  await addGreen();
+});
 
-// 🔥 AQUI ESTAVA O ERRO NO SEU SISTEMA
-// Agora conectando corretamente os botões
-if (btnGreen) {
-  btnGreen.addEventListener("click", () => marcar("GREEN"));
-}
+btnRed.addEventListener("click", async () => {
+  resultadoAvaliacao.innerText = "Avaliação enviada!";
+  tipoEnviado.innerText = "Resultado: RED";
 
-if (btnRed) {
-  btnRed.addEventListener("click", () => marcar("RED"));
-}
+  btnGreen.disabled = true;
+  btnRed.disabled = true;
+
+  await addRed();
+});
