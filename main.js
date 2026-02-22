@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, increment, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -25,6 +25,8 @@ const btnRed = document.getElementById("btnRed");
 const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
 const tipoEnviado = document.getElementById("tipoEnviado");
 const contadorGlobal = document.getElementById("contadorGlobal");
+const oportunidade = document.getElementById("oportunidade");
+const aviatorVisual = document.getElementById("aviatorVisual");
 
 window.mostrarCadastro = () => {
   loginDiv.style.display = "none";
@@ -74,12 +76,31 @@ async function marcar(tipo) {
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
-  if (tipo === "GREEN") {
-    await updateDoc(refGlobal, { green: increment(1) });
-  } else {
-    await updateDoc(refGlobal, { red: increment(1) });
+  try {
+    if (tipo === "GREEN") {
+      await updateDoc(refGlobal, { green: increment(1) });
+    } else {
+      await updateDoc(refGlobal, { red: increment(1) });
+    }
+  } catch {
+    if (tipo === "GREEN") {
+      await setDoc(refGlobal, { green: 1, red: 0 });
+    } else {
+      await setDoc(refGlobal, { green: 0, red: 1 });
+    }
   }
 }
 
 btnGreen.addEventListener("click", () => marcar("GREEN"));
 btnRed.addEventListener("click", () => marcar("RED"));
+
+window.gerar = (tipo) => {
+  oportunidade.style.display = "block";
+  oportunidade.innerText = "Oportunidade gerada para: " + tipo;
+
+  if (tipo === "Aviator") {
+    aviatorVisual.style.display = "block";
+  } else {
+    aviatorVisual.style.display = "none";
+  }
+};
