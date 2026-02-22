@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, updateDoc, increment, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, increment, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -31,7 +31,7 @@ const aviatorVisual = document.getElementById("aviatorVisual");
 const refGlobal = doc(db, "historico", "global");
 
 
-// 🔥 FUNÇÕES GLOBAIS (CORREÇÃO AQUI)
+// 🔥 FUNÇÕES GLOBAIS (mantidas exatamente como estavam)
 window.mostrarCadastro = function () {
   loginDiv.style.display = "none";
   cadastroDiv.style.display = "flex";
@@ -83,11 +83,19 @@ window.gerar = function (tipo) {
 };
 
 
-// 🔥 CONTADOR GLOBAL
-onSnapshot(refGlobal, async (docSnap) => {
-  if (!docSnap.exists()) {
+// 🔥 GARANTE QUE O DOCUMENTO EXISTE (ANTES do onSnapshot)
+async function garantirDocumento() {
+  const snap = await getDoc(refGlobal);
+  if (!snap.exists()) {
     await setDoc(refGlobal, { green: 0, red: 0 });
-  } else {
+  }
+}
+garantirDocumento();
+
+
+// 🔥 CONTADOR GLOBAL
+onSnapshot(refGlobal, (docSnap) => {
+  if (docSnap.exists()) {
     contadorGlobal.innerText =
       "Global: " +
       (docSnap.data().green || 0) +
@@ -98,7 +106,7 @@ onSnapshot(refGlobal, async (docSnap) => {
 });
 
 
-// 🔥 AVALIAÇÃO
+// 🔥 AVALIAÇÃO (mantida)
 async function marcar(tipo) {
   resultadoAvaliacao.innerText = "Avaliação enviada!";
   tipoEnviado.innerText = "Resultado: " + tipo;
@@ -106,18 +114,10 @@ async function marcar(tipo) {
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
-  try {
-    if (tipo === "GREEN") {
-      await updateDoc(refGlobal, { green: increment(1) });
-    } else {
-      await updateDoc(refGlobal, { red: increment(1) });
-    }
-  } catch {
-    if (tipo === "GREEN") {
-      await setDoc(refGlobal, { green: 1, red: 0 });
-    } else {
-      await setDoc(refGlobal, { green: 0, red: 1 });
-    }
+  if (tipo === "GREEN") {
+    await updateDoc(refGlobal, { green: increment(1) });
+  } else {
+    await updateDoc(refGlobal, { red: increment(1) });
   }
 }
 
