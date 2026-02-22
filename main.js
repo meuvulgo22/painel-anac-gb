@@ -28,39 +28,66 @@ const contadorGlobal = document.getElementById("contadorGlobal");
 const oportunidade = document.getElementById("oportunidade");
 const aviatorVisual = document.getElementById("aviatorVisual");
 
-window.mostrarCadastro = () => {
+const refGlobal = doc(db, "historico", "global");
+
+
+// 🔥 FUNÇÕES GLOBAIS (CORREÇÃO AQUI)
+window.mostrarCadastro = function () {
   loginDiv.style.display = "none";
   cadastroDiv.style.display = "flex";
 };
 
-window.mostrarLogin = () => {
+window.mostrarLogin = function () {
   cadastroDiv.style.display = "none";
   loginDiv.style.display = "flex";
 };
 
-window.cadastrar = async () => {
+window.cadastrar = async function () {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  await createUserWithEmailAndPassword(auth, email, senha);
-  alert("Cadastro realizado!");
-  mostrarLogin();
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, senha);
+    alert("Cadastro realizado!");
+    mostrarLogin();
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
-window.login = async () => {
+window.login = async function () {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  await signInWithEmailAndPassword(auth, email, senha);
+
+  try {
+    await signInWithEmailAndPassword(auth, email, senha);
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
-onAuthStateChanged(auth, (user) => {
-  painelDiv.style.display = user ? "block" : "none";
-  loginDiv.style.display = user ? "none" : "flex";
-});
+window.gerar = function (tipo) {
+  oportunidade.style.display = "block";
+  oportunidade.innerText = "Oportunidade gerada para: " + tipo;
 
-const refGlobal = doc(db, "historico", "global");
+  if (tipo === "Aviator") {
+    aviatorVisual.style.display = "block";
+  } else {
+    aviatorVisual.style.display = "none";
+  }
 
-onSnapshot(refGlobal, (docSnap) => {
-  if (docSnap.exists()) {
+  btnGreen.disabled = false;
+  btnRed.disabled = false;
+  resultadoAvaliacao.innerText = "";
+  tipoEnviado.innerText = "";
+};
+
+
+// 🔥 CONTADOR GLOBAL
+onSnapshot(refGlobal, async (docSnap) => {
+  if (!docSnap.exists()) {
+    await setDoc(refGlobal, { green: 0, red: 0 });
+  } else {
     contadorGlobal.innerText =
       "Global: " +
       (docSnap.data().green || 0) +
@@ -70,9 +97,12 @@ onSnapshot(refGlobal, (docSnap) => {
   }
 });
 
+
+// 🔥 AVALIAÇÃO
 async function marcar(tipo) {
   resultadoAvaliacao.innerText = "Avaliação enviada!";
   tipoEnviado.innerText = "Resultado: " + tipo;
+
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
@@ -94,13 +124,9 @@ async function marcar(tipo) {
 btnGreen.addEventListener("click", () => marcar("GREEN"));
 btnRed.addEventListener("click", () => marcar("RED"));
 
-window.gerar = (tipo) => {
-  oportunidade.style.display = "block";
-  oportunidade.innerText = "Oportunidade gerada para: " + tipo;
 
-  if (tipo === "Aviator") {
-    aviatorVisual.style.display = "block";
-  } else {
-    aviatorVisual.style.display = "none";
-  }
-};
+// 🔥 AUTH
+onAuthStateChanged(auth, (user) => {
+  painelDiv.style.display = user ? "block" : "none";
+  loginDiv.style.display = user ? "none" : "flex";
+});
