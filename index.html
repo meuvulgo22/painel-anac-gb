@@ -1,45 +1,69 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANAC/GB VIP</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- LOGIN -->
-<div id="login" class="box">
-  <h2>Login</h2>
-  <input type="email" id="emailLogin" placeholder="Email">
-  <input type="password" id="senhaLogin" placeholder="Senha">
-  <button onclick="login()">Entrar</button>
-  <p onclick="mostrarCadastro()" class="link">Criar conta</p>
+<div id="login">
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="email" id="emailLogin" placeholder="Email">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
+  </div>
 </div>
 
 <!-- CADASTRO -->
-<div id="cadastro" class="box" style="display:none;">
-  <h2>Cadastro</h2>
-  <input type="email" id="emailCadastro" placeholder="Email">
-  <input type="password" id="senhaCadastro" placeholder="Senha">
-  <button onclick="cadastrar()">Cadastrar</button>
-  <p onclick="mostrarLogin()" class="link">Já tenho conta</p>
+<div id="cadastro" style="display:none;">
+  <div class="cadastro-box">
+    <h2>Cadastro</h2>
+    <input type="email" id="emailCadastro" placeholder="Email">
+    <input type="password" id="senhaCadastro" placeholder="Senha">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
+  </div>
 </div>
 
 <!-- PAINEL -->
 <div id="painel" style="display:none;">
-
-  <h1>Painel</h1>
-
-  <div id="contadorGlobal"></div>
-
-  <div id="avaliacao" class="avaliacao">
-    <button id="btnGreen" class="green">DEU GREEN ✅</button>
-    <button id="btnRed" class="red">DEU RED ❌</button>
+  <div class="topo">
+    <h1>ANAC/GB</h1>
+    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
+    <button onclick="gerar('Touro')">GERAR TOURO</button>
+    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
+    <div id="timer"></div>
   </div>
 
-  <div id="resultadoAvaliacao"></div>
-  <div id="tipoEnviado"></div>
+  <div id="oportunidade"></div>
 
+  <div id="avaliacao">
+    <button id="btnGreen" class="av-btn green">DEU GREEN ✅</button>
+    <button id="btnRed" class="av-btn red">DEU RED ❌</button>
+    <div id="resultadoAvaliacao"></div>
+    <div id="tipoEnviado"></div>
+  </div>
+
+  <div id="aviatorVisual">
+    <div class="aviator-box">
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="plane">✈️</div>
+      <div class="aviator-title">AVIATOR</div>
+      <div class="circle"><span id="multiplicador">1.00X</span></div>
+      <div class="info-text">No máximo 1 até 3 vezes pra fazer tentativa!</div>
+    </div>
+  </div>
+
+  <div class="frame-area">
+    <iframe src="https://123bet06.com/?id=161145545"></iframe>
+  </div>
 </div>
 
 <script type="module" src="main.js"></script>
