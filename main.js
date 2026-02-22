@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, doc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// 🔥 SUA CONFIG ORIGINAL
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -17,7 +16,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ================= ELEMENTOS =================
 const loginDiv = document.getElementById("login");
 const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
@@ -28,55 +26,35 @@ const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
 const tipoEnviado = document.getElementById("tipoEnviado");
 const contadorGlobal = document.getElementById("contadorGlobal");
 
-// ================= LOGIN / CADASTRO =================
-window.mostrarCadastro = function () {
+window.mostrarCadastro = () => {
   loginDiv.style.display = "none";
   cadastroDiv.style.display = "flex";
 };
 
-window.mostrarLogin = function () {
+window.mostrarLogin = () => {
   cadastroDiv.style.display = "none";
   loginDiv.style.display = "flex";
 };
 
-window.cadastrar = async function () {
+window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-
-  try {
-    await createUserWithEmailAndPassword(auth, email, senha);
-    alert("Cadastro realizado!");
-    mostrarLogin();
-  } catch (e) {
-    alert(e.message);
-  }
+  await createUserWithEmailAndPassword(auth, email, senha);
+  alert("Cadastro realizado!");
+  mostrarLogin();
 };
 
-window.login = async function () {
+window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-  } catch (e) {
-    alert(e.message);
-  }
+  await signInWithEmailAndPassword(auth, email, senha);
 };
 
-// ================= PERSISTÊNCIA LOGIN =================
 onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loginDiv.style.display = "none";
-    cadastroDiv.style.display = "none";
-    painelDiv.style.display = "block";
-  } else {
-    loginDiv.style.display = "flex";
-    cadastroDiv.style.display = "none";
-    painelDiv.style.display = "none";
-  }
+  painelDiv.style.display = user ? "block" : "none";
+  loginDiv.style.display = user ? "none" : "flex";
 });
 
-// ================= CONTADOR GLOBAL =================
 const refGlobal = doc(db, "historico", "global");
 
 onSnapshot(refGlobal, (docSnap) => {
@@ -90,32 +68,18 @@ onSnapshot(refGlobal, (docSnap) => {
   }
 });
 
-// ================= FUNÇÕES =================
-async function addGreen() {
-  await updateDoc(refGlobal, { green: increment(1) });
-}
-
-async function addRed() {
-  await updateDoc(refGlobal, { red: increment(1) });
-}
-
-// ================= BOTÕES =================
-btnGreen.addEventListener("click", async () => {
+async function marcar(tipo) {
   resultadoAvaliacao.innerText = "Avaliação enviada!";
-  tipoEnviado.innerText = "Resultado: GREEN";
-
+  tipoEnviado.innerText = "Resultado: " + tipo;
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
-  await addGreen();
-});
+  if (tipo === "GREEN") {
+    await updateDoc(refGlobal, { green: increment(1) });
+  } else {
+    await updateDoc(refGlobal, { red: increment(1) });
+  }
+}
 
-btnRed.addEventListener("click", async () => {
-  resultadoAvaliacao.innerText = "Avaliação enviada!";
-  tipoEnviado.innerText = "Resultado: RED";
-
-  btnGreen.disabled = true;
-  btnRed.disabled = true;
-
-  await addRed();
-});
+btnGreen.addEventListener("click", () => marcar("GREEN"));
+btnRed.addEventListener("click", () => marcar("RED"));
