@@ -4,13 +4,13 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 // ================= FIREBASE =================
 const firebaseConfig = {
-  apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
-  authDomain: "painel-anac-gb.firebaseapp.com",
-  projectId: "painel-anac-gb",
-  storageBucket: "painel-anac-gb.appspot.com",
-  messagingSenderId: "941890806312",
-  appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d",
-  measurementId: "G-HG4KDJBP3G"
+apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
+authDomain: "painel-anac-gb.firebaseapp.com",
+projectId: "painel-anac-gb",
+storageBucket: "painel-anac-gb.appspot.com",
+messagingSenderId: "941890806312",
+appId: "1:941890806312:web:323f01daf1f9ddcf1a0b1d",
+measurementId: "G-HG4KDJBP3G"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -31,7 +31,7 @@ const oportunidade = document.getElementById("oportunidade");
 const aviatorVisual = document.getElementById("aviatorVisual");
 const multiplicador = document.getElementById("multiplicador");
 
-// ================= VARIÁVEIS DE LOGIC =================
+// ================= VARIÁVEIS =================
 let bloqueado = false;
 let tempoRestante = 0;
 let intervalo;
@@ -42,73 +42,73 @@ const refGlobal = doc(db, "historico", "global");
 
 // ================= LOGIN / CADASTRO =================
 window.mostrarCadastro = () => {
-  loginDiv.style.display = "none";
-  cadastroDiv.style.display = "flex";
+loginDiv.style.display = "none";
+cadastroDiv.style.display = "flex";
 };
 
 window.mostrarLogin = () => {
-  cadastroDiv.style.display = "none";
-  loginDiv.style.display = "flex";
+cadastroDiv.style.display = "none";
+loginDiv.style.display = "flex";
 };
 
 window.cadastrar = async () => {
-  const email = document.getElementById("emailCadastro").value;
-  const senha = document.getElementById("senhaCadastro").value;
-  try {
-    await createUserWithEmailAndPassword(auth, email, senha);
-    alert("Cadastro realizado!");
-    mostrarLogin();
-  } catch (e) {
-    alert(e.message);
-  }
+const email = document.getElementById("emailCadastro").value;
+const senha = document.getElementById("senhaCadastro").value;
+try {
+await createUserWithEmailAndPassword(auth, email, senha);
+alert("Cadastro realizado!");
+mostrarLogin();
+} catch (e) {
+alert(e.message);
+}
 };
 
 window.login = async () => {
-  const email = document.getElementById("emailLogin").value;
-  const senha = document.getElementById("senhaLogin").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, senha);
-  } catch (e) {
-    alert(e.message);
-  }
+const email = document.getElementById("emailLogin").value;
+const senha = document.getElementById("senhaLogin").value;
+try {
+await signInWithEmailAndPassword(auth, email, senha);
+} catch (e) {
+alert(e.message);
+}
 };
 
 // ================= GARANTIR DOCUMENTO GLOBAL =================
 async function garantirDocumento() {
-  const snap = await getDoc(refGlobal);
-  if (!snap.exists()) {
-    await setDoc(refGlobal, { green: 0, red: 0 });
-  }
+const snap = await getDoc(refGlobal);
+if (!snap.exists()) {
+await setDoc(refGlobal, { green: 0, red: 0 });
+}
 }
 garantirDocumento();
 
 // ================= CONTADOR GLOBAL =================
 onSnapshot(refGlobal, (docSnap) => {
-  if (docSnap.exists()) {
-    contadorGlobal.innerText =
-      "Global: " +
-      (docSnap.data().green || 0) +
-      " Green | " +
-      (docSnap.data().red || 0) +
-      " Red";
-  }
+if (docSnap.exists()) {
+contadorGlobal.innerText =
+"Global: " +
+(docSnap.data().green || 0) +
+" Green | " +
+(docSnap.data().red || 0) +
+" Red";
+}
 });
 
 // ================= MARCAR AVALIAÇÃO =================
 async function marcar(tipo) {
-  if (avaliacaoFeita) return;
+if (avaliacaoFeita) return;
 
-  avaliacaoFeita = true;
-  resultadoAvaliacao.innerText = "✅ Avaliação enviada!";
-  tipoEnviado.innerText = "Enviada como " + tipo;
-  btnGreen.disabled = true;
-  btnRed.disabled = true;
+avaliacaoFeita = true;
+resultadoAvaliacao.innerText = "✅ Avaliação enviada!";
+tipoEnviado.innerText = "Enviada como " + tipo;
+btnGreen.disabled = true;
+btnRed.disabled = true;
 
-  if (tipo === "GREEN") {
-    await updateDoc(refGlobal, { green: increment(1) });
-  } else {
-    await updateDoc(refGlobal, { red: increment(1) });
-  }
+if (tipo === "GREEN") {
+await updateDoc(refGlobal, { green: increment(1) });
+} else {
+await updateDoc(refGlobal, { red: increment(1) });
+}
 }
 
 btnGreen.addEventListener("click", () => marcar("GREEN"));
@@ -116,81 +116,95 @@ btnRed.addEventListener("click", () => marcar("RED"));
 
 // ================= TIMER =================
 function iniciarTimer(minutos) {
-  bloqueado = true;
-  tempoRestante = minutos * 60;
-  clearInterval(intervalo);
+bloqueado = true;
+tempoRestante = minutos * 60;
+clearInterval(intervalo);
 
-  intervalo = setInterval(() => {
-    tempoRestante--;
-    document.getElementById("timer").innerText =
-      "Nova oportunidade em: " + tempoRestante + "s";
+intervalo = setInterval(() => {
+tempoRestante--;
+document.getElementById("timer").innerText =
+"Nova oportunidade em: " + tempoRestante + "s";
 
-    if (tempoRestante <= 0) {
-      clearInterval(intervalo);
-      bloqueado = false;
-      avaliacaoFeita = false;
-      btnGreen.disabled = false;
-      btnRed.disabled = false;
-      document.getElementById("timer").innerText = "";
-    }
-  }, 1000);
+if (tempoRestante <= 0) {
+clearInterval(intervalo);
+bloqueado = false;
+avaliacaoFeita = false;
+btnGreen.disabled = false;
+btnRed.disabled = false;
+document.getElementById("timer").innerText = "";
+}
+}, 1000);
 }
 
-// ================= GERAR SINAL =================
+// ================= GERAR SINAL (AGORA USANDO GO) =================
 window.gerar = function (jogo) {
-  if (bloqueado) {
-    alert("Aguarde o tempo acabar.");
-    return;
-  }
 
-  let minutos = Math.floor(Math.random() * 2) + 1;
-  oportunidade.style.display = "block";
-  btnGreen.disabled = false;
-  btnRed.disabled = false;
-  resultadoAvaliacao.innerText = "";
-  tipoEnviado.innerText = "";
+if (bloqueado) {
+alert("Aguarde o tempo acabar.");
+return;
+}
 
-  // ================= AVIATOR =================
-  if (jogo === "Aviator") {
-    aviatorVisual.style.display = "block";
-    let multi = 1.00;
-    let limite = (Math.random() * 5.45 + 1).toFixed(2);
-    clearInterval(animacaoMulti);
+fetch(`http://localhost:8080/signal?jogo=${jogo}`)
+.then(res => res.json())
+.then(data => {
 
-    animacaoMulti = setInterval(() => {
-      multi += 0.05;
-      multiplicador.innerText = multi.toFixed(2) + "X";
-      if (multi >= limite) clearInterval(animacaoMulti);
-    }, 100);
+let minutos = data.minutos;
 
-    oportunidade.innerHTML =
-      "<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " + minutos + " minuto(s)";
-    iniciarTimer(minutos);
-  }
+oportunidade.style.display = "block";
+btnGreen.disabled = false;
+btnRed.disabled = false;
+resultadoAvaliacao.innerText = "";
+tipoEnviado.innerText = "";
 
-  // ================= TIGRE / TOURO =================
-  if (jogo === "Tigre" || jogo === "Touro") {
-    aviatorVisual.style.display = "none";
+// AVIATOR
+if (jogo === "Aviator") {
 
-    let bet = jogo === "Tigre" ? (Math.random() < 0.5 ? 0.40 : 0.80) : Math.random() < 0.5 ? 0.50 : 1.0;
-    let normal = Math.floor(Math.random() * 10) + 1;
-    let turbo = Math.floor(Math.random() * 10) + 1;
+aviatorVisual.style.display = "block";
+clearInterval(animacaoMulti);
 
-    oportunidade.innerHTML = `
-      <b>✅ OPORTUNIDADE GERADA!</b><br><br>
-      🦁 ${jogo} 🦁<br>
-      ⏰ Válido por: ${minutos} minuto(s)<br>
-      💰 Bet: R$ ${bet.toFixed(2)}<br>
-      👉 ${normal}x Normal<br>
-      ⚡ ${turbo}x Turbo
-    `;
+let multi = 1.00;
+let limite = parseFloat(data.multiplicador).toFixed(2);
 
-    iniciarTimer(minutos);
-  }
+animacaoMulti = setInterval(() => {
+multi += 0.05;
+multiplicador.innerText = multi.toFixed(2) + "X";
+if (multi >= limite) clearInterval(animacaoMulti);
+}, 100);
+
+oportunidade.innerHTML =
+"<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " +
+minutos +
+" minuto(s)";
+
+iniciarTimer(minutos);
+}
+
+// TIGRE / TOURO
+if (jogo === "Tigre" || jogo === "Touro") {
+
+aviatorVisual.style.display = "none";
+
+oportunidade.innerHTML = `
+<b>✅ OPORTUNIDADE GERADA!</b><br><br>
+🦁 ${jogo} 🦁<br>
+⏰ Válido por: ${minutos} minuto(s)<br>
+💰 Bet: R$ ${data.bet.toFixed(2)}<br>
+👉 ${data.normal}x Normal<br>
+⚡ ${data.turbo}x Turbo
+`;
+
+iniciarTimer(minutos);
+}
+
+})
+.catch(() => {
+alert("Erro ao conectar ao servidor de sinais.");
+});
+
 };
 
 // ================= AUTH STATE =================
 onAuthStateChanged(auth, (user) => {
-  painelDiv.style.display = user ? "block" : "none";
-  loginDiv.style.display = user ? "none" : "flex";
+painelDiv.style.display = user ? "block" : "none";
+loginDiv.style.display = user ? "none" : "flex";
 });
