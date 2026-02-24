@@ -202,8 +202,10 @@ function buscarSinal(jogo) {
       tipoEnviado.innerText = "";
 
       // Histórico
-      let item = document.createElement("li");
-      item.innerText = jogo + " gerado agora";
+      let agora = new Date();
+let horaFormatada = agora.toLocaleTimeString();
+let item = document.createElement("li");
+item.innerText = `${jogo} gerado às ${horaFormatada}`;
       historicoLista.prepend(item);
       if (historicoLista.children.length > 5) {
         historicoLista.removeChild(historicoLista.lastChild);
