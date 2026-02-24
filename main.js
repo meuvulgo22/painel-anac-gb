@@ -59,6 +59,10 @@ window.mostrarLogin = () => {
 window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
+  if (!email || !senha) {
+    alert("Preencha todos os campos!");
+    return;
+  }
   try {
     await createUserWithEmailAndPassword(auth, email, senha);
     alert("Cadastro realizado!");
@@ -71,8 +75,13 @@ window.cadastrar = async () => {
 window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
+  if (!email || !senha) {
+    alert("Preencha todos os campos!");
+    return;
+  }
   try {
     await signInWithEmailAndPassword(auth, email, senha);
+    // Esconder login/cadastro e mostrar painel
     loginDiv.style.display = "none";
     cadastroDiv.style.display = "none";
     painelDiv.style.display = "block";
@@ -83,8 +92,14 @@ window.login = async () => {
 
 // ================= CONTROLAR LOGIN =================
 onAuthStateChanged(auth, (user) => {
-  painelDiv.style.display = user ? "block" : "none";
-  loginDiv.style.display = user ? "none" : "flex";
+  if (user) {
+    painelDiv.style.display = "block";
+    loginDiv.style.display = "none";
+    cadastroDiv.style.display = "none";
+  } else {
+    painelDiv.style.display = "none";
+    loginDiv.style.display = "flex";
+  }
 });
 
 // ================= GARANTIR DOCUMENTO GLOBAL =================
@@ -214,9 +229,25 @@ function buscarSinal(jogo) {
         }, 100);
 
         oportunidade.innerHTML =
-          "<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " +
-          minutos +
-          " minuto(s)";
+          "<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " + minutos + " minuto(s)";
       }
 
       // TIGRE / TOURO
+      if (jogo === "Tigre" || jogo === "Touro") {
+        aviatorVisual.style.display = "none";
+        oportunidade.innerHTML = `
+<b>✅ OPORTUNIDADE GERADA!</b><br><br>
+🦁 ${jogo} 🦁<br>
+⏰ Válido por: ${minutos} minuto(s)<br>
+💰 Bet: R$ ${data.bet.toFixed(2)}<br>
+👉 ${data.normal}x Normal<br>
+⚡ ${data.turbo}x Turbo
+        `;
+      }
+
+      iniciarTimer(minutos);
+    })
+    .catch(() => {
+      alert("Erro ao conectar ao servidor.");
+    });
+}
