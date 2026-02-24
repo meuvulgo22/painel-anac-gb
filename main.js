@@ -144,7 +144,7 @@ alert("Aguarde o tempo acabar.");
 return;
 }
 
-fetch(`http://localhost:8080/signal?jogo=${jogo}`)
+fetch(`/api/signal?jogo=${jogo}`)
 .then(res => res.json())
 .then(data => {
 
