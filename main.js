@@ -114,6 +114,15 @@ garantirDocumento();
 // ================= CONTADOR GLOBAL =================
 onSnapshot(refGlobal, (docSnap) => {
   if (docSnap.exists()) {
+  
+  let green = docSnap.data().green || 0;
+let red = docSnap.data().red || 0;
+let total = green + red;
+
+let rtp = total > 0 ? ((green / total) * 100).toFixed(2) : 0;
+
+document.getElementById("rtp").innerText = "RTP: " + rtp + "%";
+  
     contadorGlobal.innerText =
       "Global: " +
       (docSnap.data().green || 0) +
