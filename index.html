@@ -68,32 +68,27 @@
     <div id="tipoEnviado"></div>
   </div>
 
-  <!-- ========== NOVO AVIATOR COM RASTREADOR ========== -->
+  <!-- ========== AVIATOR COM RASTREADOR ========== -->
   <div id="aviatorVisual" style="display:none;">
     <div class="rastreador-container">
       
-      <!-- Título -->
       <h2 class="rastreador-titulo">🎯 ESCOLHA A VELA A RASTREAR ABAIXO</h2>
       
-      <!-- Botões de vela -->
       <div class="velas-botoes">
         <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
         <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
         <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
       </div>
       
-      <!-- Botão ligar/desligar rastreador -->
       <button id="btnRastreador" class="rastreador-btn" onclick="ligarRastreador()">
         ▶️ LIGAR RASTREADOR
       </button>
       
-      <!-- Status do rastreador -->
       <div id="statusRastreador" class="status-rastreador">
         🔴 RASTREADOR AGUARDANDO<br>
         <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
       </div>
 
-      <!-- Últimos acertos -->
       <div class="ultimos-acertos">
         <h3>📈 ÚLTIMOS ACERTOS</h3>
         <div id="listaAcertos" class="lista-acertos">
@@ -108,7 +103,6 @@
         </div>
       </div>
 
-      <!-- Área da IA (escondida inicialmente) -->
       <div id="areaIA" style="display:none;" class="area-ia">
         <div class="ia-status">🤖 IA LENDO O MERCADO EM TEMPO REAL...</div>
         <div class="ia-descricao">
@@ -119,19 +113,17 @@
           <span>⏳ Projetando o próximo minuto da entrada</span>
         </div>
         
-        <!-- Chances de sucesso -->
         <div class="chances-sucesso">
           <span>Chances de sucesso</span>
-          <div class="porcentagem-grande" id="porcentagemSucesso">100%</div>
+          <div class="porcentagem-grande" id="porcentagemSucesso">0%</div>
         </div>
         
-        <!-- Entrada sugerida -->
         <div class="entrada-sugerida">
           <div class="entrada-titulo">🎯 ENTRADA SUGERIDA, ALTA CHANCE DE SUCESSO</div>
           <div class="entrada-visao">VISÃO DA ENTRADA</div>
           <div class="entrada-analise" id="entradaAnalise">
             Análise completa da entrada<br>
-            Entre <strong id="rangeMin">1.29</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
+            Entre <strong id="rangeMin">1.00</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
           </div>
         </div>
         

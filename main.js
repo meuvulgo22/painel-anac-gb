@@ -330,8 +330,9 @@ window.ligarRastreador = function() {
       porcentagem.textContent = sucesso + '%';
       porcentagem.style.color = sucesso >= 80 ? '#00ff88' : '#ff8800';
       
-      const min = (Math.random() * 2 + 0.5).toFixed(2);
-      const max = (Math.random() * 3 + 1.5).toFixed(2);
+      // Mínimo 1.00x (nunca 0.xx)
+      const min = (Math.random() * 0.8 + 1.0).toFixed(2);
+      const max = (Math.random() * 2 + 1.5).toFixed(2);
       const topo = (Math.random() * 10 + 2).toFixed(2);
       
       rangeMin.textContent = min;
