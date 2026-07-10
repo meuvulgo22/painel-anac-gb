@@ -81,7 +81,6 @@ window.login = async () => {
   }
   try {
     await signInWithEmailAndPassword(auth, email, senha);
-    // Esconder login/cadastro e mostrar painel
     loginDiv.style.display = "none";
     cadastroDiv.style.display = "none";
     painelDiv.style.display = "block";
@@ -210,7 +209,6 @@ function buscarSinal(jogo) {
       resultadoAvaliacao.innerText = "";
       tipoEnviado.innerText = "";
 
-      // Histórico
       let agora = new Date();
 let horaFormatada = agora.toLocaleTimeString();
 let item = document.createElement("li");
@@ -220,12 +218,10 @@ item.innerText = `${jogo} gerado às ${horaFormatada}`;
         historicoLista.removeChild(historicoLista.lastChild);
       }
 
-      // Probabilidade
       let prob = Math.floor(Math.random() * 15) + 85;
       barraProb.style.width = prob + "%";
       textoProb.innerText = "Probabilidade de Green: " + prob + "%";
 
-      // AVIATOR
       if (jogo === "Aviator") {
         aviatorVisual.style.display = "block";
         clearInterval(animacaoMulti);
@@ -243,7 +239,6 @@ item.innerText = `${jogo} gerado às ${horaFormatada}`;
           "<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " + minutos + " minuto(s)";
       }
 
-      // TIGRE / TOURO
       if (jogo === "Tigre" || jogo === "Touro") {
         aviatorVisual.style.display = "none";
         oportunidade.innerHTML = `
@@ -262,3 +257,162 @@ item.innerText = `${jogo} gerado às ${horaFormatada}`;
       alert("Erro ao conectar ao servidor.");
     });
 }
+
+// ============================================================
+// ========== NOVAS FUNÇÕES DO AVIATOR RASTREADOR ==========
+// ============================================================
+
+let velaSelecionada = null;
+let rastreadorLigado = false;
+let intervaloRastreador = null;
+
+// Selecionar vela
+window.selecionarVela = function(vela) {
+  velaSelecionada = vela;
+  
+  document.querySelectorAll('.vela-btn').forEach(btn => {
+    btn.classList.remove('ativo');
+  });
+  
+  document.querySelectorAll('.vela-btn').forEach(btn => {
+    if (btn.dataset.vela === vela) {
+      btn.classList.add('ativo');
+    }
+  });
+  
+  const status = document.getElementById('statusRastreador');
+  status.innerHTML = `
+    ✅ Vela ${vela} selecionada<br>
+    <span class="status-sub">Agora toque em "LIGAR RASTREADOR" para iniciar</span>
+  `;
+};
+
+// Ligar rastreador
+window.ligarRastreador = function() {
+  if (!velaSelecionada) {
+    alert('Selecione uma vela primeiro (3X, 10X ou 30X)!');
+    return;
+  }
+  
+  if (rastreadorLigado) {
+    alert('Rastreador já está ligado!');
+    return;
+  }
+  
+  rastreadorLigado = true;
+  
+  const btn = document.getElementById('btnRastreador');
+  btn.textContent = '⏳ RASTREADOR LIGADO...';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  
+  document.getElementById('areaIA').style.display = 'block';
+  
+  const status = document.getElementById('statusRastreador');
+  status.innerHTML = `
+    🟢 RASTREADOR ATIVO<br>
+    <span class="status-sub">Lendo mercado em tempo real...</span>
+  `;
+  
+  const porcentagem = document.getElementById('porcentagemSucesso');
+  const rangeMin = document.getElementById('rangeMin');
+  const rangeMax = document.getElementById('rangeMax');
+  const rangeTopo = document.getElementById('rangeTopo');
+  
+  let progresso = 0;
+  intervaloRastreador = setInterval(() => {
+    progresso += Math.floor(Math.random() * 5) + 1;
+    if (progresso >= 100) {
+      progresso = 100;
+      clearInterval(intervaloRastreador);
+      
+      const sucesso = Math.floor(Math.random() * 15) + 85;
+      porcentagem.textContent = sucesso + '%';
+      porcentagem.style.color = sucesso >= 80 ? '#00ff88' : '#ff8800';
+      
+      const min = (Math.random() * 2 + 0.5).toFixed(2);
+      const max = (Math.random() * 3 + 1.5).toFixed(2);
+      const topo = (Math.random() * 10 + 2).toFixed(2);
+      
+      rangeMin.textContent = min;
+      rangeMax.textContent = max;
+      rangeTopo.textContent = topo;
+      
+      const status = document.getElementById('statusRastreador');
+      status.innerHTML = `
+        🟢 IA PRONTA<br>
+        <span class="status-sub">Entrada sugerida disponível abaixo</span>
+      `;
+      
+      document.querySelector('.btn-desligar').style.display = 'block';
+      
+      atualizarAcertos(sucesso);
+      
+    } else {
+      porcentagem.textContent = progresso + '%';
+    }
+  }, 150);
+};
+
+// Atualizar últimos acertos
+function atualizarAcertos(sucesso) {
+  const lista = document.getElementById('listaAcertos');
+  const detalhes = document.getElementById('detalhesAcertos');
+  
+  const cor = sucesso >= 70 ? '#c9a227' : '#ff4444';
+  
+  const velas = ['3X', '10X', '30X'];
+  const velaEscolhida = velaSelecionada || velas[Math.floor(Math.random() * 3)];
+  
+  const novoItem = document.createElement('span');
+  novoItem.className = 'acerto-item';
+  novoItem.textContent = `${velaEscolhida} ${sucesso}%`;
+  novoItem.style.borderColor = cor;
+  novoItem.style.color = cor;
+  
+  lista.prepend(novoItem);
+  if (lista.children.length > 5) {
+    lista.removeChild(lista.lastChild);
+  }
+  
+  const hora = new Date().toLocaleTimeString();
+  const multi = (Math.random() * 50 + 1).toFixed(2);
+  const novoDetalhe = document.createElement('span');
+  novoDetalhe.textContent = `${multi}x ${hora}`;
+  detalhes.prepend(novoDetalhe);
+  if (detalhes.children.length > 5) {
+    detalhes.removeChild(detalhes.lastChild);
+  }
+}
+
+// Desligar rastreador
+window.desligarRastreador = function() {
+  if (intervaloRastreador) {
+    clearInterval(intervaloRastreador);
+    intervaloRastreador = null;
+  }
+  
+  rastreadorLigado = false;
+  velaSelecionada = null;
+  
+  const btn = document.getElementById('btnRastreador');
+  btn.textContent = '▶️ LIGAR RASTREADOR';
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  
+  document.getElementById('areaIA').style.display = 'none';
+  
+  const status = document.getElementById('statusRastreador');
+  status.innerHTML = `
+    🔴 RASTREADOR AGUARDANDO<br>
+    <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
+  `;
+  
+  document.getElementById('porcentagemSucesso').textContent = '0%';
+  
+  document.querySelectorAll('.vela-btn').forEach(btn => {
+    btn.classList.remove('ativo');
+  });
+  
+  document.querySelector('.btn-desligar').style.display = 'none';
+};

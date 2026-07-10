@@ -1,179 +1,228 @@
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-
-body{
-  background:#000;
-  color:#fff;
-  overflow-x:hidden;
+/* ========== NOVO AVIATOR COM RASTREADOR ========== */
+.rastreador-container {
+  background: #0d0d0d;
+  border: 1px solid #c9a227;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 15px auto;
+  max-width: 380px;
+  text-align: center;
 }
 
-body::before{
-  content:"";
-  position:fixed;
-  width:200%;
-  height:200%;
-  background:linear-gradient(45deg,transparent 48%,#c9a22722 50%,transparent 52%);
-  background-size:60px 60px;
-  animation:move 20s linear infinite;
-  z-index:-1;
+.rastreador-titulo {
+  color: #c9a227;
+  font-size: 14px;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
 }
 
-@keyframes move{
-  from{transform:translate(0,0);}
-  to{transform:translate(-200px,-200px);}
+.velas-botoes {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 15px;
 }
 
-/* LOGIN E CADASTRO */
-#login, #cadastro{
-  position:fixed;
-  width:100%;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#000;
-  z-index:1000;
+.vela-btn {
+  background: #1a1a1a;
+  color: #c9a227;
+  border: 1px solid #c9a227;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.login-box, .cadastro-box{
-  background:#0d0d0d;
-  padding:40px;
-  border-radius:20px;
-  border:1px solid #c9a227;
-  box-shadow:0 0 30px #c9a22755;
-  text-align:center;
-  width:320px;
+.vela-btn:hover {
+  background: #c9a227;
+  color: #000;
 }
 
-.login-box h2, .cadastro-box h2{
-  margin-bottom:25px;
-  color:#c9a227;
-  letter-spacing:4px;
+.vela-btn.ativo {
+  background: #c9a227;
+  color: #000;
 }
 
-.login-box input, .cadastro-box input{
-  width:100%;
-  padding:14px;
-  margin-bottom:20px;
-  border:none;
-  border-radius:10px;
-  background:#1a1a1a;
-  color:#fff;
+.rastreador-btn {
+  background: #c9a227;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 30px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+  transition: 0.3s;
 }
 
-.login-box button, .cadastro-box button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  background:#c9a227;
-  color:#000;
-  font-weight:bold;
-  cursor:pointer;
+.rastreador-btn:hover {
+  transform: scale(1.02);
 }
 
-/* PAINEL */
-#painel{padding:20px;}
-
-.topo{text-align:center;margin-bottom:25px;}
-.topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
-.topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;border-radius:12px;background:#111;color:#c9a227;font-weight:bold;cursor:pointer;}
-
-#timer{margin-top:10px;color:#aaa;font-size:13px;}
-#oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;width:300px;font-size:14px;}
-
-/* AVALIAÇÃO */
-#avaliacao{
-  text-align:center;
-  margin-top:15px;
+.rastreador-btn.desligar {
+  background: #c62828;
+  color: #fff;
 }
 
-.avaliacao-botoes{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
+.status-rastreador {
+  background: #111;
+  border-radius: 12px;
+  padding: 15px;
+  color: #ff4444;
+  font-weight: bold;
+  font-size: 14px;
+  border: 1px solid #333;
+  margin-bottom: 15px;
 }
 
-.av-btn{
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
+.status-rastreador .status-sub {
+  color: #888;
+  font-weight: normal;
+  font-size: 12px;
+  display: block;
+  margin-top: 5px;
 }
 
-.green{background:#2e7d32;color:#fff;}
-.red{background:#c62828;color:#fff;}
-
-#resultadoAvaliacao{
-  margin-top:10px;
-  font-weight:bold;
+.ultimos-acertos {
+  background: #111;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
 }
 
-#tipoEnviado{
-  margin-top:5px;
-  font-size:13px;
+.ultimos-acertos h3 {
+  color: #c9a227;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
-/* LOADING / HISTÓRICO / PROBABILIDADE */
-#loadingSinal{
-  display:none;
-  text-align:center;
-  font-size:16px;
-  font-weight:bold;
-  color:#c9a227;
-  margin:15px auto;
+.lista-acertos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-#historicoLista{
-  list-style:none;
-  padding:10px;
-  max-width:320px;
-  margin:15px auto;
-  background:#111;
-  border-radius:12px;
-  border:1px solid #c9a227;
-  color:#fff;
-  font-size:14px;
-  max-height:150px;
-  overflow-y:auto;
+.acerto-item {
+  background: #1a1a1a;
+  padding: 4px 12px;
+  border-radius: 15px;
+  border: 1px solid #c9a227;
+  color: #c9a227;
+  font-size: 13px;
 }
 
-#historicoLista li{
-  padding:5px 0;
-  border-bottom:1px solid #333;
+.detalhes-acertos {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #888;
 }
 
-#barraProb{
-  width:0%;
-  height:20px;
-  background:#2e7d32;
-  border-radius:10px;
-  margin:10px auto;
-  max-width:300px;
-  transition:width 0.5s ease;
+/* Área IA */
+.area-ia {
+  background: #0a0a0a;
+  border-radius: 12px;
+  padding: 15px;
+  border: 1px solid #c9a227;
+  margin-top: 10px;
 }
 
-#textoProb{
-  text-align:center;
-  color:#c9a227;
-  font-size:14px;
-  margin-top:5px;
+.ia-status {
+  color: #c9a227;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
-/* AVIATOR */
-#aviatorVisual{display:none;text-align:center;margin-top:20px;}
-.aviator-box{background:#fff;padding:30px;border-radius:20px;max-width:320px;margin:0 auto;position:relative;overflow:hidden;}
-.plane{position:absolute;font-size:22px;color:#ff5722;animation:fly 6s linear infinite;opacity:0.2;}
-.plane:nth-child(1){top:20%;animation-duration:7s;}
-.plane:nth-child(2){top:50%;animation-duration:9s;}
-.plane:nth-child(3){top:75%;animation-duration:6s;}
-@keyframes fly{from{left:-50px;}to{left:110%;}}
-.aviator-title{background:#e53935;color:#fff;padding:12px;border-radius:10px;font-weight:bold;margin-bottom:25px;position:relative;z-index:2;}
-.circle{width:180px;height:180px;border-radius:50%;border:4px solid #ff7043;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:bold;color:#e53935;animation:pulse 1.5s infinite;position:relative;z-index:2;background:#fff;}
-@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
-.info-text{margin-top:15px;font-size:13px;color:#555;position:relative;z-index:2;}
+.ia-descricao {
+  color: #aaa;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
 
-/* FRAME AREA */
-.frame-area{margin-top:30px;padding:15px;border-radius:20px;background:#0d0d0d;border:1px solid #c9a227;}
-iframe{width:100%;height:650px;border-radius:15px;border:1px solid #c9a227;background:#000;}
+.ia-passos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #88ff88;
+  margin-bottom: 15px;
+}
+
+.chances-sucesso {
+  background: #111;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+}
+
+.chances-sucesso span {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.porcentagem-grande {
+  font-size: 48px;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 30px #00ff8844;
+}
+
+.entrada-sugerida {
+  background: #111;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+}
+
+.entrada-titulo {
+  color: #c9a227;
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.entrada-visao {
+  color: #ff8800;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.entrada-analise {
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.entrada-analise strong {
+  color: #c9a227;
+}
+
+.btn-desligar {
+  background: #c62828;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.btn-desligar:hover {
+  background: #b71c1c;
+}

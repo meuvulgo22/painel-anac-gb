@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -69,14 +68,76 @@
     <div id="tipoEnviado"></div>
   </div>
 
-  <div id="aviatorVisual">
-    <div class="aviator-box">
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="plane">✈️</div>
-      <div class="aviator-title">AVIATOR</div>
-      <div class="circle"><span id="multiplicador">1.00X</span></div>
-      <div class="info-text">No máximo 1 até 3 vezes pra fazer tentativa!</div>
+  <!-- ========== NOVO AVIATOR COM RASTREADOR ========== -->
+  <div id="aviatorVisual" style="display:none;">
+    <div class="rastreador-container">
+      
+      <!-- Título -->
+      <h2 class="rastreador-titulo">🎯 ESCOLHA A VELA A RASTREAR ABAIXO</h2>
+      
+      <!-- Botões de vela -->
+      <div class="velas-botoes">
+        <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
+        <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
+        <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
+      </div>
+      
+      <!-- Botão ligar/desligar rastreador -->
+      <button id="btnRastreador" class="rastreador-btn" onclick="ligarRastreador()">
+        ▶️ LIGAR RASTREADOR
+      </button>
+      
+      <!-- Status do rastreador -->
+      <div id="statusRastreador" class="status-rastreador">
+        🔴 RASTREADOR AGUARDANDO<br>
+        <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
+      </div>
+
+      <!-- Últimos acertos -->
+      <div class="ultimos-acertos">
+        <h3>📈 ÚLTIMOS ACERTOS</h3>
+        <div id="listaAcertos" class="lista-acertos">
+          <span class="acerto-item">30X 59%</span>
+          <span class="acerto-item">30X 61%</span>
+          <span class="acerto-item">10X 62%</span>
+        </div>
+        <div id="detalhesAcertos" class="detalhes-acertos">
+          <span>31.76x 13:36</span>
+          <span>1296.87x 00:30</span>
+          <span>16.24x 23:47</span>
+        </div>
+      </div>
+
+      <!-- Área da IA (escondida inicialmente) -->
+      <div id="areaIA" style="display:none;" class="area-ia">
+        <div class="ia-status">🤖 IA LENDO O MERCADO EM TEMPO REAL...</div>
+        <div class="ia-descricao">
+          A IA está lendo as últimas 30 velas para projetar o que pode acontecer no próximo minuto.
+        </div>
+        <div class="ia-passos">
+          <span>✅ Lendo as últimas 30 velas</span>
+          <span>⏳ Projetando o próximo minuto da entrada</span>
+        </div>
+        
+        <!-- Chances de sucesso -->
+        <div class="chances-sucesso">
+          <span>Chances de sucesso</span>
+          <div class="porcentagem-grande" id="porcentagemSucesso">100%</div>
+        </div>
+        
+        <!-- Entrada sugerida -->
+        <div class="entrada-sugerida">
+          <div class="entrada-titulo">🎯 ENTRADA SUGERIDA, ALTA CHANCE DE SUCESSO</div>
+          <div class="entrada-visao">VISÃO DA ENTRADA</div>
+          <div class="entrada-analise" id="entradaAnalise">
+            Análise completa da entrada<br>
+            Entre <strong id="rangeMin">1.29</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
+          </div>
+        </div>
+        
+        <button class="btn-desligar" onclick="desligarRastreador()">🔴 DESLIGAR RASTREADOR</button>
+      </div>
+
     </div>
   </div>
 
