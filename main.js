@@ -27,6 +27,10 @@ const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
 const btnGreen = document.getElementById("btnGreen");
 const btnRed = document.getElementById("btnRed");
+const btnTigre = document.getElementById("btnTigre");
+const btnTouro = document.getElementById("btnTouro");
+const btnAviator = document.getElementById("btnAviator");
+const avisoDeposito = document.getElementById("avisoDeposito");
 const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
 const tipoEnviado = document.getElementById("tipoEnviado");
 const contadorGlobal = document.getElementById("contadorGlobal");
@@ -45,6 +49,7 @@ let tempoRestante = 0;
 let intervalo;
 let avaliacaoFeita = false;
 let sinalAtual = null;
+let usuarioLogado = null;
 const refGlobal = doc(db, "historico", "global");
 
 // ============================================================
@@ -241,6 +246,69 @@ function animarFadeIn(el) {
 }
 
 // ============================================================
+// FUNÇÕES DE DEPÓSITO
+// ============================================================
+function liberarFuncoes() {
+  // Libera botões principais
+  btnGreen.disabled = false;
+  btnRed.disabled = false;
+  btnTigre.disabled = false;
+  btnTouro.disabled = false;
+  btnAviator.disabled = false;
+  
+  // Esconde aviso
+  if (avisoDeposito) avisoDeposito.style.display = 'none';
+}
+
+function bloquearFuncoes() {
+  // Bloqueia botões principais
+  btnGreen.disabled = true;
+  btnRed.disabled = true;
+  btnTigre.disabled = true;
+  btnTouro.disabled = true;
+  btnAviator.disabled = true;
+  
+  // Mostra aviso
+  if (avisoDeposito) avisoDeposito.style.display = 'block';
+}
+
+window.confirmarDeposito = async function() {
+  const user = auth.currentUser;
+  if (!user) {
+    alert('Faça login primeiro!');
+    return;
+  }
+  
+  try {
+    await setDoc(doc(db, "usuarios", user.uid), {
+      depositou: true,
+      dataDeposito: new Date().toISOString()
+    }, { merge: true });
+    
+    alert('✅ Depósito confirmado! Funções liberadas.');
+    liberarFuncoes();
+  } catch (e) {
+    alert('Erro ao confirmar depósito: ' + e.message);
+  }
+};
+
+async function verificarDeposito(uid) {
+  try {
+    const docRef = doc(db, "usuarios", uid);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists() && docSnap.data().depositou === true) {
+      liberarFuncoes();
+    } else {
+      bloquearFuncoes();
+    }
+  } catch (e) {
+    console.error('Erro ao verificar depósito:', e);
+    bloquearFuncoes();
+  }
+}
+
+// ============================================================
 // LOGIN / CADASTRO
 // ============================================================
 window.mostrarCadastro = () => { loginDiv.style.display = "none"; cadastroDiv.style.display = "flex"; };
@@ -266,95 +334,8 @@ window.login = async () => {
     loginDiv.style.display = "none";
     cadastroDiv.style.display = "none";
     painelDiv.style.display = "block";
-    ia.atualizarInterfaceIA();
   } catch (e) { alert(e.message); }
 };
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    painelDiv.style.display = "block";
-    loginDiv.style.display = "none";
-    cadastroDiv.style.display = "none";
-    ia.atualizarInterfaceIA();
-  } else {
-    painelDiv.style.display = "none";
-    loginDiv.style.display = "flex";
-  }
-});
-
 // ============================================================
-// FIREBASE - CONTADOR GLOBAL
-// ============================================================
-async function garantirDocumento() {
-  const snap = await getDoc(refGlobal);
-  if (!snap.exists()) await setDoc(refGlobal, { green: 0, red: 0 });
-}
-garantirDocumento();
-
-onSnapshot(refGlobal, (docSnap) => {
-  if (docSnap.exists()) {
-    let green = docSnap.data().green || 0, red = docSnap.data().red || 0;
-    let total = green + red;
-    let rtp = total > 0 ? ((green / total) * 100).toFixed(2) : 0;
-    document.getElementById("rtp").innerText = "RTP: " + rtp + "%";
-    contadorGlobal.innerText = "Global: " + green + " Green | " + red + " Red";
-  }
-});
-
-// ============================================================
-// AVALIAÇÃO (GREEN / RED)
-// ============================================================
-async function marcar(tipo) {
-  if (avaliacaoFeita) return;
-  avaliacaoFeita = true;
-  resultadoAvaliacao.innerText = "✅ Avaliação enviada!";
-  tipoEnviado.innerText = "Enviada como " + tipo;
-  btnGreen.disabled = true;
-  btnRed.disabled = true;
-
-  if (sinalAtual) {
-    const tipoSinal = sinalAtual.tipo || '10X';
-    const multiplicador = (sinalAtual.min + sinalAtual.max) / 2;
-    ia.registrarResultado(tipoSinal, multiplicador, tipo.toLowerCase());
-    sinalAtual = null;
-  }
-
-  if (tipo === "GREEN") await updateDoc(refGlobal, { green: increment(1) });
-  else await updateDoc(refGlobal, { red: increment(1) });
-}
-
-btnGreen.addEventListener("click", () => marcar("GREEN"));
-btnRed.addEventListener("click", () => marcar("RED"));
-
-// ============================================================
-// TIMER
-// ============================================================
-function iniciarTimer(minutos) {
-  bloqueado = true;
-  tempoRestante = minutos * 60;
-  clearInterval(intervalo);
-  intervalo = setInterval(() => {
-    tempoRestante--;
-    document.getElementById("timer").innerText = "Nova oportunidade em: " + tempoRestante + "s";
-    if (tempoRestante <= 0) {
-      clearInterval(intervalo);
-      bloqueado = false;
-      avaliacaoFeita = false;
-      btnGreen.disabled = false;
-      btnRed.disabled = false;
-      document.getElementById("timer").innerText = "";
-    }
-  }, 1000);
-}
-
-// ============================================================
-// GERAR SINAL COM IA + ANIMAÇÕES
-// ============================================================
-window.gerar = function (jogo) {
-  if (bloqueado) return alert("Aguarde o tempo acabar.");
-  loadingSinal.style.display = "block";
-  oportunidade.style.display = "none";
-  aviatorVisual.style.display = "none";
-
-  let contador = 4;
-  loadingSinal.innerText = "🧠 IA analisando... " + contador;
+//

@@ -9,14 +9,16 @@ body::before{content:"";position:fixed;width:200%;height:200%;background:linear-
 .login-box, .cadastro-box{background:#0d0d0d;padding:40px;border-radius:20px;border:1px solid #c9a227;box-shadow:0 0 30px #c9a22755;text-align:center;width:320px;}
 .login-box h2, .cadastro-box h2{margin-bottom:25px;color:#c9a227;letter-spacing:4px;}
 .login-box input, .cadastro-box input{width:100%;padding:14px;margin-bottom:20px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;}
-.login-box button, .cadastro-box button{width:100%;padding:14px;border:none;border-radius:10px;background:#c9a227;color:#000;font-weight:bold;cursor:pointer;}
+.login-box button, .cadastro-box button{width:100%;padding:14px;border:none;border-radius:10px;background:#c9a227;color:#000;font-weight:bold;cursor:pointer;transition:0.3s;}
+.login-box button:hover, .cadastro-box button:hover{transform:scale(1.02);}
 
 /* PAINEL PRINCIPAL */
 #painel{padding:20px;max-width:450px;margin:0 auto;}
 .topo{text-align:center;margin-bottom:25px;}
 .topo h1{color:#c9a227;letter-spacing:6px;margin-bottom:15px;}
 .topo button{padding:10px 25px;margin:5px;border:1px solid #c9a227;border-radius:12px;background:#111;color:#c9a227;font-weight:bold;cursor:pointer;transition:0.3s;}
-.topo button:hover{background:#c9a227;color:#000;}
+.topo button:hover:not(:disabled){background:#c9a227;color:#000;}
+.topo button:disabled{opacity:0.3;cursor:not-allowed;}
 #timer{margin-top:10px;color:#aaa;font-size:13px;}
 #oportunidade{display:none;margin:20px auto;background:#111;padding:20px;border-radius:15px;border:1px solid #c9a227;max-width:300px;font-size:14px;transition:opacity 0.5s;}
 
@@ -24,7 +26,8 @@ body::before{content:"";position:fixed;width:200%;height:200%;background:linear-
 #avaliacao{text-align:center;margin-top:15px;}
 .avaliacao-botoes{display:flex;flex-direction:column;align-items:center;gap:10px;}
 .av-btn{padding:10px 20px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;transition:0.3s;}
-.av-btn:hover{transform:scale(1.05);}
+.av-btn:hover:not(:disabled){transform:scale(1.05);}
+.av-btn:disabled{opacity:0.3;cursor:not-allowed;}
 .green{background:#2e7d32;color:#fff;}
 .red{background:#c62828;color:#fff;}
 #resultadoAvaliacao{margin-top:10px;font-weight:bold;}
@@ -38,7 +41,7 @@ body::before{content:"";position:fixed;width:200%;height:200%;background:linear-
 #barraProb{width:0%;height:20px;background:#2e7d32;border-radius:10px;margin:10px auto;max-width:300px;transition:width 1s ease;}
 #textoProb{text-align:center;color:#c9a227;font-size:14px;margin-top:5px;}
 
-/* ===== AVIATOR RASTREADOR COM IA ===== */
+/* AVIATOR RASTREADOR COM IA */
 .rastreador-container{background:linear-gradient(145deg,#0d0d0d,#1a1a1a);border:1px solid #c9a227;border-radius:20px;padding:25px 20px;margin:15px auto;max-width:420px;text-align:center;box-shadow:0 0 40px rgba(201,162,39,0.15);}
 .rastreador-titulo{color:#c9a227;font-size:15px;letter-spacing:2px;margin-bottom:18px;font-weight:bold;}
 .velas-botoes{display:flex;justify-content:center;gap:14px;margin-bottom:18px;}
@@ -46,8 +49,8 @@ body::before{content:"";position:fixed;width:200%;height:200%;background:linear-
 .vela-btn:hover{background:#c9a227;color:#000;transform:scale(1.05);}
 .vela-btn.ativo{background:#c9a227;color:#000;box-shadow:0 0 25px rgba(201,162,39,0.5);}
 .rastreador-btn{background:linear-gradient(135deg,#c9a227,#f5d742);color:#000;border:none;border-radius:12px;padding:16px 20px;font-weight:bold;font-size:17px;cursor:pointer;width:100%;margin-bottom:18px;transition:all 0.3s ease;letter-spacing:1px;}
-.rastreador-btn:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(201,162,39,0.4);}
-.rastreador-btn:disabled{opacity:0.5;transform:none;}
+.rastreador-btn:hover:not(:disabled){transform:scale(1.02);box-shadow:0 0 30px rgba(201,162,39,0.4);}
+.rastreador-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
 .status-rastreador{background:#0a0a0a;border-radius:14px;padding:18px 15px;color:#ff4444;font-weight:bold;font-size:15px;border:1px solid #333;margin-bottom:18px;min-height:70px;display:flex;flex-direction:column;justify-content:center;}
 .status-rastreador .status-sub{color:#888;font-weight:normal;font-size:12px;display:block;margin-top:6px;}
 .ultimos-acertos{background:#0a0a0a;border-radius:14px;padding:15px;margin-bottom:18px;border:1px solid #333;}
