@@ -141,9 +141,8 @@ body::before{
   max-width:100px;
 }
 
-.vela-btn:hover{
-  background:#c9a227;
-  color:#000;
+.vela-btn:hover:not(.ativo){
+  background:#c9a22733;
   transform:scale(1.05);
 }
 
@@ -168,9 +167,14 @@ body::before{
   letter-spacing:1px;
 }
 
-.oraculo-btn-ligar:hover{
+.oraculo-btn-ligar:hover:not(:disabled){
   transform:scale(1.02);
   box-shadow:0 0 30px rgba(201,162,39,0.4);
+}
+
+.oraculo-btn-ligar:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
 }
 
 .oraculo-btn-ligar.desligado{
@@ -199,6 +203,10 @@ body::before{
   font-size:12px;
   display:block;
   margin-top:6px;
+}
+
+.oraculo-status.verde{
+  color:#00ff88;
 }
 
 .oraculo-acertos{

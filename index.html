@@ -76,20 +76,20 @@
         
         <!-- Botões 3X 10X 30X -->
         <div class="velas-botoes">
-          <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
-          <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
-          <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
+          <button class="vela-btn" id="vela3X" onclick="selecionarVela('3X')">3X</button>
+          <button class="vela-btn" id="vela10X" onclick="selecionarVela('10X')">10X</button>
+          <button class="vela-btn" id="vela30X" onclick="selecionarVela('30X')">30X</button>
         </div>
         
         <!-- Botão Ligar/Desligar (alterna) -->
-        <button id="btnRastreador" class="oraculo-btn-ligar" onclick="alternarRastreador()">
+        <button id="btnRastreador" class="oraculo-btn-ligar" onclick="alternarRastreador()" disabled>
           ▶️ LIGAR RASTREADOR
         </button>
         
         <!-- Status -->
         <div id="statusRastreador" class="oraculo-status">
           🔴 RASTREADOR AGUARDANDO<br>
-          <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
+          <span class="status-sub">Escolha a vela acima para ativar o rastreador.</span>
         </div>
 
         <!-- Últimos Acertos -->
@@ -128,7 +128,7 @@
           
           <!-- Botões IA PRONTA + DESLIGAR -->
           <div class="ia-acoes">
-            <button class="btn-ia-pronta" disabled>🧠 IA PRONTA</button>
+            <button class="btn-ia-pronta" id="btnIaPronta" disabled>🧠 IA PRONTA</button>
             <button class="btn-desligar" onclick="desligarRastreador()">DESLIGAR</button>
           </div>
 

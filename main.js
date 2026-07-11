@@ -18,7 +18,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-
 setPersistence(auth, browserLocalPersistence);
 
 // ============================================================
@@ -29,6 +28,9 @@ const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
 const btnGreen = document.getElementById("btnGreen");
 const btnRed = document.getElementById("btnRed");
+const btnTigre = document.getElementById("btnTigre");
+const btnTouro = document.getElementById("btnTouro");
+const btnAviator = document.getElementById("btnAviator");
 const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
 const tipoEnviado = document.getElementById("tipoEnviado");
 const contadorGlobal = document.getElementById("contadorGlobal");
@@ -50,7 +52,7 @@ let avaliacaoFeita = false;
 let sinalAtual = null;
 
 // ============================================================
-// LOGIN / CADASTRO
+// LOGIN
 // ============================================================
 window.mostrarCadastro = function() {
   loginDiv.style.display = "none";
@@ -92,9 +94,6 @@ window.login = async function() {
   }
 };
 
-// ============================================================
-// CONTROLE DE LOGIN
-// ============================================================
 onAuthStateChanged(auth, function(user) {
   if (user) {
     painelDiv.style.display = "block";
@@ -108,7 +107,7 @@ onAuthStateChanged(auth, function(user) {
 });
 
 // ============================================================
-// GARANTIR DOCUMENTO GLOBAL
+// FIREBASE GLOBAL
 // ============================================================
 async function garantirDocumento() {
   try {
@@ -116,15 +115,10 @@ async function garantirDocumento() {
     if (!snap.exists()) {
       await setDoc(refGlobal, { green: 0, red: 0 });
     }
-  } catch (e) {
-    console.error("Erro ao garantir documento:", e);
-  }
+  } catch (e) {}
 }
 garantirDocumento();
 
-// ============================================================
-// CONTADOR GLOBAL
-// ============================================================
 onSnapshot(refGlobal, function(docSnap) {
   if (docSnap.exists()) {
     let green = docSnap.data().green || 0;
@@ -138,7 +132,7 @@ onSnapshot(refGlobal, function(docSnap) {
 });
 
 // ============================================================
-// AVALIAÇÃO (GREEN / RED)
+// AVALIAÇÃO
 // ============================================================
 async function marcar(tipo) {
   if (avaliacaoFeita) return;
@@ -154,9 +148,7 @@ async function marcar(tipo) {
     } else {
       await updateDoc(refGlobal, { red: increment(1) });
     }
-  } catch (e) {
-    console.error("Erro ao marcar:", e);
-  }
+  } catch (e) {}
 }
 
 if (btnGreen) btnGreen.addEventListener("click", function() { marcar("GREEN"); });
@@ -195,6 +187,19 @@ window.gerar = function(jogo) {
 
   loadingSinal.style.display = "block";
   oportunidade.style.display = "none";
+  
+  // Se for Aviator, mostra o visual e esconde oportunidade
+  if (jogo === "Aviator") {
+    aviatorVisual.style.display = "block";
+    oportunidade.style.display = "none";
+    loadingSinal.style.display = "none";
+    
+    // Reseta o rastreador
+    resetarRastreador();
+    return;
+  }
+
+  // Tigre / Touro
   aviatorVisual.style.display = "none";
 
   let contador = 3;
@@ -208,7 +213,6 @@ window.gerar = function(jogo) {
       clearInterval(contagem);
       loadingSinal.style.display = "none";
       
-      // Gerar sinal aleatório
       const sinal = gerarSinalAleatorio(jogo);
       sinalAtual = sinal;
       mostrarSinal(jogo, sinal);
@@ -260,41 +264,40 @@ function mostrarSinal(jogo, sinal) {
   barraProb.style.width = sinal.probabilidade + "%";
   textoProb.innerText = "Probabilidade: " + sinal.probabilidade + "%";
 
-  if (jogo === "Aviator") {
-    aviatorVisual.style.display = "block";
-    
-    // Atualizar status
-    const status = document.getElementById('statusRastreador');
-    status.innerHTML = `
-      🟢 SINAL GERADO!<br>
-      <span class="status-sub">Clique em LIGAR RASTREADOR para análise</span>
-    `;
-    
-    oportunidade.innerHTML = `
-      <b>✈️ AVIATOR GERADO!</b><br><br>
-      🎯 ${sinal.tipo} | ${sinal.min}x-${sinal.max}x<br>
-      ⏰ Válido por: 2 minuto(s)
-    `;
-  }
-
-  if (jogo === "Tigre" || jogo === "Touro") {
-    aviatorVisual.style.display = "none";
-    oportunidade.innerHTML = `
-      <b>✅ OPORTUNIDADE GERADA!</b><br><br>
-      🦁 ${jogo} | ${sinal.tipo}<br>
-      🎯 ${sinal.min}x-${sinal.max}x<br>
-      ⏰ Válido por: 2 minuto(s)
-    `;
-  }
+  oportunidade.innerHTML = `
+    <b>✅ OPORTUNIDADE GERADA!</b><br><br>
+    🦁 ${jogo} | ${sinal.tipo}<br>
+    🎯 ${sinal.min}x-${sinal.max}x<br>
+    ⏰ Válido por: 2 minuto(s)
+  `;
 
   iniciarTimer(2);
 }
 
 // ============================================================
-// RASTREADOR - LIGAR/DESLIGAR (MESMO BOTÃO)
+// RASTREADOR - LIGAR/DESLIGAR
 // ============================================================
 let velaSelecionada = null;
 let rastreadorLigado = false;
 let intervaloRastreador = null;
 
-window.selecion
+window.selecionarVela = function(vela) {
+  velaSelecionada = vela;
+  
+  document.querySelectorAll('.vela-btn').forEach(btn => {
+    btn.classList.remove('ativo');
+  });
+  
+  document.querySelectorAll('.vela-btn').forEach(btn => {
+    if (btn.dataset.vela === vela) {
+      btn.classList.add('ativo');
+    }
+  });
+  
+  // Habilita o botão de ligar
+  const btn = document.getElementById('btnRastreador');
+  btn.disabled = false;
+  btn.textContent = '▶️ LIGAR RASTREADOR';
+  btn.className = 'oraculo-btn-ligar';
+  
+  const status = document.getElementById
