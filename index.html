@@ -1,143 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ANAC/GB VIP</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANAC/GB VIP - IA</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <div class="login-box">
-    <h2>Login</h2>
-    <input type="email" id="emailLogin" placeholder="Email">
-    <input type="password" id="senhaLogin" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
-    <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
-  </div>
-</div>
-
-<!-- CADASTRO -->
-<div id="cadastro" style="display:none;">
-  <div class="cadastro-box">
-    <h2>Cadastro</h2>
-    <input type="email" id="emailCadastro" placeholder="Email">
-    <input type="password" id="senhaCadastro" placeholder="Senha">
-    <button onclick="cadastrar()">Cadastrar</button>
-    <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
-  </div>
-</div>
-
-<!-- PAINEL -->
-<div id="painel" style="display:none;">
-  <div class="topo">
-    <h1>ANAC/GB</h1>
-    <button onclick="gerar('Tigre')">GERAR TIGRE</button>
-    <button onclick="gerar('Touro')">GERAR TOURO</button>
-    <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
-    <div id="timer"></div>
-    <div id="contadorGlobal" style="margin-top:8px;color:#c9a227;font-weight:bold;"></div>
-  </div>
-
-  <div id="oportunidade"></div>
-  
-  <div id="loadingSinal" style="display:none; font-size:18px; margin-top:10px;"></div>
-
-  <div id="historicoBox" style="margin-top:20px;">
-    <h3>📊 Últimos Sinais</h3>
-    <ul id="historicoLista" style="list-style:none; padding:0;"></ul>
-  </div>
-
-  <div id="probabilidadeBox" style="margin-top:20px;">
-    <div style="background:#222; border-radius:10px; overflow:hidden;">
-      <div id="barraProb" style="height:20px; width:0%; background:lime; transition:1s;"></div>
+  <!-- LOGIN -->
+  <div id="login">
+    <div class="login-box">
+      <h2>Login</h2>
+      <input type="email" id="emailLogin" placeholder="Email">
+      <input type="password" id="senhaLogin" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+      <p>Não tem conta? <a href="#" onclick="mostrarCadastro()">Cadastre-se</a></p>
     </div>
-    <p id="rtp">RTP: 0%</p>
-    <p id="textoProb"></p>
   </div>
 
-  <div id="avaliacao">
-    <div class="avaliacao-botoes">
-      <button id="btnGreen" class="av-btn green">DEU GREEN ✅</button>
-      <button id="btnRed" class="av-btn red">DEU RED ❌</button>
+  <!-- CADASTRO -->
+  <div id="cadastro" style="display:none;">
+    <div class="cadastro-box">
+      <h2>Cadastro</h2>
+      <input type="email" id="emailCadastro" placeholder="Email">
+      <input type="password" id="senhaCadastro" placeholder="Senha">
+      <button onclick="cadastrar()">Cadastrar</button>
+      <p>Já tem conta? <a href="#" onclick="mostrarLogin()">Login</a></p>
     </div>
-    <div id="resultadoAvaliacao"></div>
-    <div id="tipoEnviado"></div>
   </div>
 
-  <!-- ========== AVIATOR COM RASTREADOR ========== -->
-  <div id="aviatorVisual" style="display:none;">
-    <div class="rastreador-container">
-      
-      <h2 class="rastreador-titulo">🎯 ESCOLHA A VELA A RASTREAR ABAIXO</h2>
-      
-      <div class="velas-botoes">
-        <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
-        <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
-        <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
-      </div>
-      
-      <button id="btnRastreador" class="rastreador-btn" onclick="ligarRastreador()">
-        ▶️ LIGAR RASTREADOR
-      </button>
-      
-      <div id="statusRastreador" class="status-rastreador">
-        🔴 RASTREADOR AGUARDANDO<br>
-        <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
-      </div>
+  <!-- PAINEL PRINCIPAL -->
+  <div id="painel" style="display:none;">
+    <div class="topo">
+      <h1>🤖 ANAC/GB IA</h1>
+      <button onclick="gerar('Tigre')">🐯 GERAR TIGRE</button>
+      <button onclick="gerar('Touro')">🐂 GERAR TOURO</button>
+      <button onclick="gerar('Aviator')">✈️ GERAR AVIATOR</button>
+      <div id="timer"></div>
+      <div id="contadorGlobal" style="margin-top:8px;color:#c9a227;font-weight:bold;"></div>
+    </div>
 
-      <div class="ultimos-acertos">
-        <h3>📈 ÚLTIMOS ACERTOS</h3>
-        <div id="listaAcertos" class="lista-acertos">
-          <span class="acerto-item">30X 59%</span>
-          <span class="acerto-item">30X 61%</span>
-          <span class="acerto-item">10X 62%</span>
-        </div>
-        <div id="detalhesAcertos" class="detalhes-acertos">
-          <span>31.76x 13:36</span>
-          <span>1296.87x 00:30</span>
-          <span>16.24x 23:47</span>
-        </div>
-      </div>
+    <div id="oportunidade"></div>
+    
+    <div id="loadingSinal" style="display:none; font-size:18px; margin-top:10px;"></div>
 
-      <div id="areaIA" style="display:none;" class="area-ia">
-        <div class="ia-status">🤖 IA LENDO O MERCADO EM TEMPO REAL...</div>
-        <div class="ia-descricao">
-          A IA está lendo as últimas 30 velas para projetar o que pode acontecer no próximo minuto.
-        </div>
-        <div class="ia-passos">
-          <span>✅ Lendo as últimas 30 velas</span>
-          <span>⏳ Projetando o próximo minuto da entrada</span>
+    <div id="historicoBox" style="margin-top:20px;">
+      <h3>📊 Últimos Sinais</h3>
+      <ul id="historicoLista" style="list-style:none; padding:0;"></ul>
+    </div>
+
+    <div id="probabilidadeBox" style="margin-top:20px;">
+      <div style="background:#222; border-radius:10px; overflow:hidden;">
+        <div id="barraProb" style="height:20px; width:0%; background:lime; transition:1s;"></div>
+      </div>
+      <p id="rtp">🎯 IA: Aprendendo...</p>
+      <p id="textoProb"></p>
+    </div>
+
+    <div id="avaliacao">
+      <div class="avaliacao-botoes">
+        <button id="btnGreen" class="av-btn green">DEU GREEN ✅</button>
+        <button id="btnRed" class="av-btn red">DEU RED ❌</button>
+      </div>
+      <div id="resultadoAvaliacao"></div>
+      <div id="tipoEnviado"></div>
+    </div>
+
+    <!-- AVIATOR COM IA -->
+    <div id="aviatorVisual" style="display:none;">
+      <div class="rastreador-container">
+        
+        <h2 class="rastreador-titulo">🧠 IA ANALISANDO MERCADO</h2>
+        
+        <div class="velas-botoes">
+          <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
+          <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
+          <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
         </div>
         
-        <div class="chances-sucesso">
-          <span>Chances de sucesso</span>
-          <div class="porcentagem-grande" id="porcentagemSucesso">0%</div>
-        </div>
+        <button id="btnRastreador" class="rastreador-btn" onclick="ligarRastreador()">
+          ▶️ LIGAR RASTREADOR
+        </button>
         
-        <div class="entrada-sugerida">
-          <div class="entrada-titulo">🎯 ENTRADA SUGERIDA, ALTA CHANCE DE SUCESSO</div>
-          <div class="entrada-visao">VISÃO DA ENTRADA</div>
-          <div class="entrada-analise" id="entradaAnalise">
-            Análise completa da entrada<br>
-            Entre <strong id="rangeMin">1.00</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
+        <div id="statusRastreador" class="status-rastreador">
+          🔴 IA AGUARDANDO<br>
+          <span class="status-sub">Escolha a vela e ative a IA para análise</span>
+        </div>
+
+        <div class="ultimos-acertos">
+          <h3>📈 APRENDIZADO DA IA</h3>
+          <div id="listaAcertos" class="lista-acertos">
+            <span class="acerto-item">🤖 Treinando...</span>
+          </div>
+          <div id="detalhesAcertos" class="detalhes-acertos">
+            <span id="taxaAcerto">Taxa: 0%</span>
+            <span id="totalSinais">Sinais: 0</span>
           </div>
         </div>
-        
-        <button class="btn-desligar" onclick="desligarRastreador()">🔴 DESLIGAR RASTREADOR</button>
-      </div>
 
+        <div id="areaIA" style="display:none;" class="area-ia">
+          <div class="ia-status">🧠 IA LENDO O MERCADO EM TEMPO REAL...</div>
+          <div class="ia-descricao" id="iaDescricao">
+            Analisando padrões históricos e ajustando estratégia...
+          </div>
+          <div class="ia-passos" id="iaPassos">
+            <span>📊 Lendo últimas 30 velas</span>
+            <span>🎯 Projetando entrada ideal</span>
+          </div>
+          
+          <div class="chances-sucesso">
+            <span>🤖 Confiança da IA</span>
+            <div class="porcentagem-grande" id="porcentagemSucesso">0%</div>
+          </div>
+          
+          <div class="entrada-sugerida">
+            <div class="entrada-titulo">🎯 ENTRADA SUGERIDA PELA IA</div>
+            <div class="entrada-visao">VISÃO DA IA</div>
+            <div class="entrada-analise" id="entradaAnalise">
+              Análise completa da entrada<br>
+              Entre <strong id="rangeMin">1.00</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
+            </div>
+          </div>
+          
+          <div id="iaStats" style="background:#0a0a0a; border-radius:10px; padding:12px; margin-bottom:15px; border:1px solid #333; font-size:12px; color:#888;">
+            <span id="iaAprendizado">🧠 IA em modo de aprendizado...</span>
+          </div>
+          
+          <button class="btn-desligar" onclick="desligarRastreador()">🔴 DESLIGAR IA</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="frame-area">
+      <iframe src="https://d88YY.com/?pid=3187698127&fromPage=AGENCY_ONE"></iframe>
     </div>
   </div>
 
-  <div class="frame-area">
-    <iframe src="https://d88YY.com/?pid=3187698127&fromPage=AGENCY_ONE"></iframe>
-  </div>
-</div>
-
-<script type="module" src="main.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>

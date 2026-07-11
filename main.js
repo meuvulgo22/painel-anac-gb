@@ -2,7 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, doc, updateDoc, increment, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ================= FIREBASE =================
+// ============================================================
+// CONFIGURAÇÃO DO FIREBASE
+// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyCuPyJWr0aDNQ7vUiQ2JxzqNpBxZXozoQg",
   authDomain: "painel-anac-gb.firebaseapp.com",
@@ -17,11 +19,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ================= ELEMENTOS =================
+// ============================================================
+// ELEMENTOS DA INTERFACE
+// ============================================================
 const loginDiv = document.getElementById("login");
 const cadastroDiv = document.getElementById("cadastro");
 const painelDiv = document.getElementById("painel");
-
 const btnGreen = document.getElementById("btnGreen");
 const btnRed = document.getElementById("btnRed");
 const resultadoAvaliacao = document.getElementById("resultadoAvaliacao");
@@ -29,138 +32,310 @@ const tipoEnviado = document.getElementById("tipoEnviado");
 const contadorGlobal = document.getElementById("contadorGlobal");
 const oportunidade = document.getElementById("oportunidade");
 const aviatorVisual = document.getElementById("aviatorVisual");
-const multiplicador = document.getElementById("multiplicador");
-
 const loadingSinal = document.getElementById("loadingSinal");
 const historicoLista = document.getElementById("historicoLista");
 const barraProb = document.getElementById("barraProb");
 const textoProb = document.getElementById("textoProb");
 
-// ================= VARIÁVEIS =================
+// ============================================================
+// VARIÁVEIS GLOBAIS
+// ============================================================
 let bloqueado = false;
 let tempoRestante = 0;
 let intervalo;
-let animacaoMulti;
 let avaliacaoFeita = false;
-
+let sinalAtual = null;
 const refGlobal = doc(db, "historico", "global");
 
-// ================= FUNÇÕES LOGIN/CADASTRO =================
-window.mostrarCadastro = () => {
-  loginDiv.style.display = "none";
-  cadastroDiv.style.display = "flex";
-};
+// ============================================================
+// SISTEMA DE IA (APRENDIZADO)
+// ============================================================
+class IAAviator {
+  constructor() {
+    this.historico = [];
+    this.padroes = {
+      '3X': { acertos: 0, tentativas: 0, taxa: 0 },
+      '10X': { acertos: 0, tentativas: 0, taxa: 0 },
+      '30X': { acertos: 0, tentativas: 0, taxa: 0 }
+    };
+    this.estrategiaAtual = 'balanceada';
+    this.confianca = 50;
+    this.totalSinais = 0;
+    this.taxaAcertoGlobal = 0;
+    this.carregarHistorico();
+  }
 
-window.mostrarLogin = () => {
-  cadastroDiv.style.display = "none";
-  loginDiv.style.display = "flex";
-};
+  carregarHistorico() {
+    try {
+      const salvo = localStorage.getItem('ia_historico_aviator');
+      if (salvo) {
+        const dados = JSON.parse(salvo);
+        this.historico = dados.historico || [];
+        this.padroes = dados.padroes || this.padroes;
+        this.totalSinais = dados.totalSinais || 0;
+        this.taxaAcertoGlobal = dados.taxaAcertoGlobal || 0;
+        this.confianca = dados.confianca || 50;
+        this.atualizarEstatisticas();
+      }
+    } catch (e) {
+      console.log('Nenhum histórico encontrado, iniciando IA do zero');
+    }
+  }
+
+  salvarHistorico() {
+    try {
+      localStorage.setItem('ia_historico_aviator', JSON.stringify({
+        historico: this.historico,
+        padroes: this.padroes,
+        totalSinais: this.totalSinais,
+        taxaAcertoGlobal: this.taxaAcertoGlobal,
+        confianca: this.confianca
+      }));
+    } catch (e) {}
+  }
+
+  registrarResultado(tipo, multiplicador, resultado) {
+    const entrada = { tipo, multiplicador, resultado, timestamp: new Date().toISOString() };
+    this.historico.unshift(entrada);
+    if (this.historico.length > 100) this.historico.pop();
+
+    if (this.padroes[tipo]) {
+      this.padroes[tipo].tentativas++;
+      if (resultado === 'green') this.padroes[tipo].acertos++;
+      this.padroes[tipo].taxa = (this.padroes[tipo].acertos / this.padroes[tipo].tentativas) * 100;
+    }
+
+    this.totalSinais++;
+    this.atualizarEstatisticas();
+    this.salvarHistorico();
+  }
+
+  atualizarEstatisticas() {
+    const total = this.historico.length;
+    if (total === 0) return;
+    const verdes = this.historico.filter(h => h.resultado === 'green').length;
+    this.taxaAcertoGlobal = (verdes / total) * 100;
+
+    const fatorDados = Math.min(total / 30, 1) * 30;
+    const fatorAcerto = (this.taxaAcertoGlobal / 100) * 40;
+    this.confianca = Math.min(30 + fatorDados + fatorAcerto, 95);
+
+    if (this.taxaAcertoGlobal > 70) this.estrategiaAtual = 'agressiva';
+    else if (this.taxaAcertoGlobal > 50) this.estrategiaAtual = 'balanceada';
+    else this.estrategiaAtual = 'conservadora';
+
+    this.atualizarInterfaceIA();
+  }
+
+  atualizarInterfaceIA() {
+    const taxa = document.getElementById('taxaAcerto');
+    const total = document.getElementById('totalSinais');
+    const aprendizado = document.getElementById('iaAprendizado');
+    const rtp = document.getElementById('rtp');
+    if (taxa) taxa.textContent = `🎯 Taxa: ${this.taxaAcertoGlobal.toFixed(1)}%`;
+    if (total) total.textContent = `📊 Sinais: ${this.totalSinais}`;
+    if (aprendizado) {
+      const mapa = { 'agressiva': '🔥 Agressivo', 'balanceada': '⚖️ Balanceado', 'conservadora': '🛡️ Conservador' };
+      aprendizado.textContent = `🧠 ${mapa[this.estrategiaAtual] || 'Aprendizado'} - Confiança: ${this.confianca.toFixed(0)}%`;
+    }
+    if (rtp) rtp.textContent = `🧠 IA: ${this.taxaAcertoGlobal.toFixed(1)}% de acerto | ${this.totalSinais} sinais`;
+  }
+
+  gerarSinal(jogo) {
+    let melhorTipo = '10X';
+    let melhorTaxa = 0;
+    for (const [tipo, dados] of Object.entries(this.padroes)) {
+      if (dados.tentativas > 3 && dados.taxa > melhorTaxa) {
+        melhorTaxa = dados.taxa;
+        melhorTipo = tipo;
+      }
+    }
+    if (this.totalSinais < 10) {
+      const tipos = ['3X', '10X', '30X'];
+      melhorTipo = tipos[Math.floor(Math.random() * tipos.length)];
+    }
+
+    let min, max, topo, probabilidade;
+    switch (this.estrategiaAtual) {
+      case 'agressiva':
+        min = (Math.random() * 0.5 + 1.2).toFixed(2);
+        max = (Math.random() * 1.5 + 2.5).toFixed(2);
+        topo = (Math.random() * 8 + 4).toFixed(2);
+        probabilidade = Math.floor(Math.random() * 10) + 85;
+        break;
+      case 'conservadora':
+        min = (Math.random() * 0.3 + 1.0).toFixed(2);
+        max = (Math.random() * 0.8 + 1.5).toFixed(2);
+        topo = (Math.random() * 4 + 2).toFixed(2);
+        probabilidade = Math.floor(Math.random() * 15) + 70;
+        break;
+      default:
+        min = (Math.random() * 0.5 + 1.0).toFixed(2);
+        max = (Math.random() * 1.0 + 2.0).toFixed(2);
+        topo = (Math.random() * 6 + 3).toFixed(2);
+        probabilidade = Math.floor(Math.random() * 12) + 80;
+    }
+    const ajuste = (this.confianca - 50) / 100 * 10;
+    probabilidade = Math.min(Math.max(probabilidade + ajuste, 60), 99);
+
+    if (melhorTipo === '3X') {
+      min = (Math.random() * 0.3 + 1.0).toFixed(2);
+      max = (Math.random() * 0.5 + 1.8).toFixed(2);
+      topo = (Math.random() * 3 + 2.5).toFixed(2);
+    }
+
+    return {
+      jogo, tipo: melhorTipo,
+      min: parseFloat(min), max: parseFloat(max), topo: parseFloat(topo),
+      probabilidade, confianca: this.confianca, estrategia: this.estrategiaAtual
+    };
+  }
+}
+
+const ia = new IAAviator();
+
+// ============================================================
+// FUNÇÕES DE ANIMAÇÃO
+// ============================================================
+function animarNumero(el, final, duracao = 1500) {
+  const inicio = performance.now();
+  const inicial = parseFloat(el.textContent) || 0;
+  function update(agora) {
+    const p = Math.min((agora - inicio) / duracao, 1);
+    el.textContent = (inicial + (final - inicial) * p).toFixed(2) + 'X';
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function animarPorcentagem(el, final, duracao = 2000) {
+  const inicio = performance.now();
+  function update(agora) {
+    const p = Math.min((agora - inicio) / duracao, 1);
+    el.textContent = Math.floor(final * p) + '%';
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function animarBarra(el, final, duracao = 1500) {
+  const inicio = performance.now();
+  function update(agora) {
+    const p = Math.min((agora - inicio) / duracao, 1);
+    el.style.width = (final * p) + '%';
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function animarPulse(el) {
+  el.style.transition = 'transform 0.1s';
+  el.style.transform = 'scale(1.1)';
+  setTimeout(() => el.style.transform = 'scale(1)', 200);
+}
+
+function animarFadeIn(el) {
+  el.style.opacity = '0';
+  el.style.transition = 'opacity 0.5s';
+  setTimeout(() => el.style.opacity = '1', 50);
+}
+
+// ============================================================
+// LOGIN / CADASTRO
+// ============================================================
+window.mostrarCadastro = () => { loginDiv.style.display = "none"; cadastroDiv.style.display = "flex"; };
+window.mostrarLogin = () => { cadastroDiv.style.display = "none"; loginDiv.style.display = "flex"; };
 
 window.cadastrar = async () => {
   const email = document.getElementById("emailCadastro").value;
   const senha = document.getElementById("senhaCadastro").value;
-  if (!email || !senha) {
-    alert("Preencha todos os campos!");
-    return;
-  }
+  if (!email || !senha) return alert("Preencha todos os campos!");
   try {
     await createUserWithEmailAndPassword(auth, email, senha);
     alert("Cadastro realizado!");
     mostrarLogin();
-  } catch (e) {
-    alert(e.message);
-  }
+  } catch (e) { alert(e.message); }
 };
 
 window.login = async () => {
   const email = document.getElementById("emailLogin").value;
   const senha = document.getElementById("senhaLogin").value;
-  if (!email || !senha) {
-    alert("Preencha todos os campos!");
-    return;
-  }
+  if (!email || !senha) return alert("Preencha todos os campos!");
   try {
     await signInWithEmailAndPassword(auth, email, senha);
     loginDiv.style.display = "none";
     cadastroDiv.style.display = "none";
     painelDiv.style.display = "block";
-  } catch (e) {
-    alert(e.message);
-  }
+    ia.atualizarInterfaceIA();
+  } catch (e) { alert(e.message); }
 };
 
-// ================= CONTROLAR LOGIN =================
 onAuthStateChanged(auth, (user) => {
   if (user) {
     painelDiv.style.display = "block";
     loginDiv.style.display = "none";
     cadastroDiv.style.display = "none";
+    ia.atualizarInterfaceIA();
   } else {
     painelDiv.style.display = "none";
     loginDiv.style.display = "flex";
   }
 });
 
-// ================= GARANTIR DOCUMENTO GLOBAL =================
+// ============================================================
+// FIREBASE - CONTADOR GLOBAL
+// ============================================================
 async function garantirDocumento() {
   const snap = await getDoc(refGlobal);
-  if (!snap.exists()) {
-    await setDoc(refGlobal, { green: 0, red: 0 });
-  }
+  if (!snap.exists()) await setDoc(refGlobal, { green: 0, red: 0 });
 }
 garantirDocumento();
 
-// ================= CONTADOR GLOBAL =================
 onSnapshot(refGlobal, (docSnap) => {
   if (docSnap.exists()) {
-  
-  let green = docSnap.data().green || 0;
-let red = docSnap.data().red || 0;
-let total = green + red;
-
-let rtp = total > 0 ? ((green / total) * 100).toFixed(2) : 0;
-
-document.getElementById("rtp").innerText = "RTP: " + rtp + "%";
-  
-    contadorGlobal.innerText =
-      "Global: " +
-      (docSnap.data().green || 0) +
-      " Green | " +
-      (docSnap.data().red || 0) +
-      " Red";
+    let green = docSnap.data().green || 0, red = docSnap.data().red || 0;
+    let total = green + red;
+    let rtp = total > 0 ? ((green / total) * 100).toFixed(2) : 0;
+    document.getElementById("rtp").innerText = "RTP: " + rtp + "%";
+    contadorGlobal.innerText = "Global: " + green + " Green | " + red + " Red";
   }
 });
 
-// ================= MARCAR AVALIAÇÃO =================
+// ============================================================
+// AVALIAÇÃO (GREEN / RED)
+// ============================================================
 async function marcar(tipo) {
   if (avaliacaoFeita) return;
   avaliacaoFeita = true;
-
   resultadoAvaliacao.innerText = "✅ Avaliação enviada!";
   tipoEnviado.innerText = "Enviada como " + tipo;
   btnGreen.disabled = true;
   btnRed.disabled = true;
 
-  if (tipo === "GREEN") {
-    await updateDoc(refGlobal, { green: increment(1) });
-  } else {
-    await updateDoc(refGlobal, { red: increment(1) });
+  if (sinalAtual) {
+    const tipoSinal = sinalAtual.tipo || '10X';
+    const multiplicador = (sinalAtual.min + sinalAtual.max) / 2;
+    ia.registrarResultado(tipoSinal, multiplicador, tipo.toLowerCase());
+    sinalAtual = null;
   }
+
+  if (tipo === "GREEN") await updateDoc(refGlobal, { green: increment(1) });
+  else await updateDoc(refGlobal, { red: increment(1) });
 }
+
 btnGreen.addEventListener("click", () => marcar("GREEN"));
 btnRed.addEventListener("click", () => marcar("RED"));
 
-// ================= TIMER =================
+// ============================================================
+// TIMER
+// ============================================================
 function iniciarTimer(minutos) {
   bloqueado = true;
   tempoRestante = minutos * 60;
   clearInterval(intervalo);
-
   intervalo = setInterval(() => {
     tempoRestante--;
-    document.getElementById("timer").innerText =
-      "Nova oportunidade em: " + tempoRestante + "s";
-
+    document.getElementById("timer").innerText = "Nova oportunidade em: " + tempoRestante + "s";
     if (tempoRestante <= 0) {
       clearInterval(intervalo);
       bloqueado = false;
@@ -172,248 +347,14 @@ function iniciarTimer(minutos) {
   }, 1000);
 }
 
-// ================= GERAR SINAL =================
+// ============================================================
+// GERAR SINAL COM IA + ANIMAÇÕES
+// ============================================================
 window.gerar = function (jogo) {
-  if (bloqueado) {
-    alert("Aguarde o tempo acabar.");
-    return;
-  }
-
+  if (bloqueado) return alert("Aguarde o tempo acabar.");
   loadingSinal.style.display = "block";
   oportunidade.style.display = "none";
+  aviatorVisual.style.display = "none";
 
-  let contador = 3;
-  loadingSinal.innerText = "⏳ Preparando sinal... " + contador;
-
-  let contagem = setInterval(() => {
-    contador--;
-    loadingSinal.innerText = "⏳ Preparando sinal... " + contador;
-
-    if (contador <= 0) {
-      clearInterval(contagem);
-      loadingSinal.style.display = "none";
-      buscarSinal(jogo);
-    }
-  }, 1000);
-};
-
-function buscarSinal(jogo) {
-  fetch(`/api/signal?jogo=${jogo}`)
-    .then((res) => res.json())
-    .then((data) => {
-      let minutos = data.minutos;
-
-      oportunidade.style.display = "block";
-      btnGreen.disabled = false;
-      btnRed.disabled = false;
-      resultadoAvaliacao.innerText = "";
-      tipoEnviado.innerText = "";
-
-      let agora = new Date();
-let horaFormatada = agora.toLocaleTimeString();
-let item = document.createElement("li");
-item.innerText = `${jogo} gerado às ${horaFormatada}`;
-      historicoLista.prepend(item);
-      if (historicoLista.children.length > 5) {
-        historicoLista.removeChild(historicoLista.lastChild);
-      }
-
-      let prob = Math.floor(Math.random() * 15) + 85;
-      barraProb.style.width = prob + "%";
-      textoProb.innerText = "Probabilidade de Green: " + prob + "%";
-
-      if (jogo === "Aviator") {
-        aviatorVisual.style.display = "block";
-        clearInterval(animacaoMulti);
-
-        let multi = 1.0;
-        let limite = parseFloat(data.multiplicador);
-
-        animacaoMulti = setInterval(() => {
-          multi += 0.05;
-          multiplicador.innerText = multi.toFixed(2) + "X";
-          if (multi >= limite) clearInterval(animacaoMulti);
-        }, 100);
-
-        oportunidade.innerHTML =
-          "<b>✈️ AVIATOR GERADO!</b><br><br>⏰ Válido por: " + minutos + " minuto(s)";
-      }
-
-      if (jogo === "Tigre" || jogo === "Touro") {
-        aviatorVisual.style.display = "none";
-        oportunidade.innerHTML = `
-<b>✅ OPORTUNIDADE GERADA!</b><br><br>
-🦁 ${jogo} 🦁<br>
-⏰ Válido por: ${minutos} minuto(s)<br>
-💰 Bet: R$ ${data.bet.toFixed(2)}<br>
-👉 ${data.normal}x Normal<br>
-⚡ ${data.turbo}x Turbo
-        `;
-      }
-
-      iniciarTimer(minutos);
-    })
-    .catch(() => {
-      alert("Erro ao conectar ao servidor.");
-    });
-}
-
-// ============================================================
-// ========== NOVAS FUNÇÕES DO AVIATOR RASTREADOR ==========
-// ============================================================
-
-let velaSelecionada = null;
-let rastreadorLigado = false;
-let intervaloRastreador = null;
-
-// Selecionar vela
-window.selecionarVela = function(vela) {
-  velaSelecionada = vela;
-  
-  document.querySelectorAll('.vela-btn').forEach(btn => {
-    btn.classList.remove('ativo');
-  });
-  
-  document.querySelectorAll('.vela-btn').forEach(btn => {
-    if (btn.dataset.vela === vela) {
-      btn.classList.add('ativo');
-    }
-  });
-  
-  const status = document.getElementById('statusRastreador');
-  status.innerHTML = `
-    ✅ Vela ${vela} selecionada<br>
-    <span class="status-sub">Agora toque em "LIGAR RASTREADOR" para iniciar</span>
-  `;
-};
-
-// Ligar rastreador
-window.ligarRastreador = function() {
-  if (!velaSelecionada) {
-    alert('Selecione uma vela primeiro (3X, 10X ou 30X)!');
-    return;
-  }
-  
-  if (rastreadorLigado) {
-    alert('Rastreador já está ligado!');
-    return;
-  }
-  
-  rastreadorLigado = true;
-  
-  const btn = document.getElementById('btnRastreador');
-  btn.textContent = '⏳ RASTREADOR LIGADO...';
-  btn.disabled = true;
-  btn.style.opacity = '0.6';
-  
-  document.getElementById('areaIA').style.display = 'block';
-  
-  const status = document.getElementById('statusRastreador');
-  status.innerHTML = `
-    🟢 RASTREADOR ATIVO<br>
-    <span class="status-sub">Lendo mercado em tempo real...</span>
-  `;
-  
-  const porcentagem = document.getElementById('porcentagemSucesso');
-  const rangeMin = document.getElementById('rangeMin');
-  const rangeMax = document.getElementById('rangeMax');
-  const rangeTopo = document.getElementById('rangeTopo');
-  
-  let progresso = 0;
-  intervaloRastreador = setInterval(() => {
-    progresso += Math.floor(Math.random() * 5) + 1;
-    if (progresso >= 100) {
-      progresso = 100;
-      clearInterval(intervaloRastreador);
-      
-      const sucesso = Math.floor(Math.random() * 15) + 85;
-      porcentagem.textContent = sucesso + '%';
-      porcentagem.style.color = sucesso >= 80 ? '#00ff88' : '#ff8800';
-      
-      // Mínimo 1.00x (nunca 0.xx)
-      const min = (Math.random() * 0.8 + 1.0).toFixed(2);
-      const max = (Math.random() * 2 + 1.5).toFixed(2);
-      const topo = (Math.random() * 10 + 2).toFixed(2);
-      
-      rangeMin.textContent = min;
-      rangeMax.textContent = max;
-      rangeTopo.textContent = topo;
-      
-      const status = document.getElementById('statusRastreador');
-      status.innerHTML = `
-        🟢 IA PRONTA<br>
-        <span class="status-sub">Entrada sugerida disponível abaixo</span>
-      `;
-      
-      document.querySelector('.btn-desligar').style.display = 'block';
-      
-      atualizarAcertos(sucesso);
-      
-    } else {
-      porcentagem.textContent = progresso + '%';
-    }
-  }, 150);
-};
-
-// Atualizar últimos acertos
-function atualizarAcertos(sucesso) {
-  const lista = document.getElementById('listaAcertos');
-  const detalhes = document.getElementById('detalhesAcertos');
-  
-  const cor = sucesso >= 70 ? '#c9a227' : '#ff4444';
-  
-  const velas = ['3X', '10X', '30X'];
-  const velaEscolhida = velaSelecionada || velas[Math.floor(Math.random() * 3)];
-  
-  const novoItem = document.createElement('span');
-  novoItem.className = 'acerto-item';
-  novoItem.textContent = `${velaEscolhida} ${sucesso}%`;
-  novoItem.style.borderColor = cor;
-  novoItem.style.color = cor;
-  
-  lista.prepend(novoItem);
-  if (lista.children.length > 5) {
-    lista.removeChild(lista.lastChild);
-  }
-  
-  const hora = new Date().toLocaleTimeString();
-  const multi = (Math.random() * 50 + 1).toFixed(2);
-  const novoDetalhe = document.createElement('span');
-  novoDetalhe.textContent = `${multi}x ${hora}`;
-  detalhes.prepend(novoDetalhe);
-  if (detalhes.children.length > 5) {
-    detalhes.removeChild(detalhes.lastChild);
-  }
-}
-
-// Desligar rastreador
-window.desligarRastreador = function() {
-  if (intervaloRastreador) {
-    clearInterval(intervaloRastreador);
-    intervaloRastreador = null;
-  }
-  
-  rastreadorLigado = false;
-  velaSelecionada = null;
-  
-  const btn = document.getElementById('btnRastreador');
-  btn.textContent = '▶️ LIGAR RASTREADOR';
-  btn.disabled = false;
-  btn.style.opacity = '1';
-  
-  document.getElementById('areaIA').style.display = 'none';
-  
-  const status = document.getElementById('statusRastreador');
-  status.innerHTML = `
-    🔴 RASTREADOR AGUARDANDO<br>
-    <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
-  `;
-  
-  document.getElementById('porcentagemSucesso').textContent = '0%';
-  
-  document.querySelectorAll('.vela-btn').forEach(btn => {
-    btn.classList.remove('ativo');
-  });
-  
-  document.querySelector('.btn-desligar').style.display = 'none';
-};
+  let contador = 4;
+  loadingSinal.innerText = "🧠 IA analisando... " + contador;
