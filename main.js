@@ -230,9 +230,11 @@ window.gerar = function(jogo) {
 function gerarSinalAleatorio(jogo) {
   const tipos = ['3X', '10X', '30X'];
   const tipo = tipos[Math.floor(Math.random() * 3)];
-  const min = (Math.random() * 0.8 + 0.8).toFixed(2);
-  const max = (Math.random() * 1.5 + 1.5).toFixed(2);
-  const topo = (Math.random() * 5 + 2).toFixed(2);
+  
+  // 🔥 CORRIGIDO: mínimo 1.00x
+  const min = (Math.random() * 0.8 + 1.0).toFixed(2);
+  const max = (Math.random() * 1.5 + 1.8).toFixed(2);
+  const topo = (Math.random() * 5 + 3).toFixed(2);
   const prob = Math.floor(Math.random() * 25) + 55;
   
   return {
@@ -378,7 +380,6 @@ function ligarRastreador() {
   const areaResultado = document.getElementById('areaResultado');
   areaResultado.style.display = 'block';
   
-  // Simular análise
   const porcentagem = document.getElementById('porcentagemSucesso');
   const rangeMin = document.getElementById('rangeMin');
   const rangeMax = document.getElementById('rangeMax');
@@ -392,13 +393,12 @@ function ligarRastreador() {
       progresso = 100;
       clearInterval(intervaloRastreador);
       
-      // Gerar resultados aleatórios realistas
+      // 🔥 CORRIGIDO: mínimo 1.00x
       const prob = Math.floor(Math.random() * 25) + 55;
-      const min = (Math.random() * 0.8 + 0.8).toFixed(2);
-      const max = (Math.random() * 1.5 + 1.5).toFixed(2);
-      const topo = (Math.random() * 5 + 2).toFixed(2);
+      const min = (Math.random() * 0.8 + 1.0).toFixed(2);
+      const max = (Math.random() * 1.5 + 1.8).toFixed(2);
+      const topo = (Math.random() * 5 + 3).toFixed(2);
       
-      // Decidir se é bom ou ruim (baseado na probabilidade)
       const isBom = prob >= 60;
       
       porcentagem.textContent = prob + '%';
@@ -421,7 +421,6 @@ function ligarRastreador() {
         entradaSugerida.style.borderColor = '#c62828';
       }
       
-      // Detalhes
       document.getElementById('detalheProb').textContent = prob + '%';
       document.getElementById('detalheProb').className = 'detalhe-valor' + (isBom ? '' : ' vermelho');
       
@@ -429,11 +428,9 @@ function ligarRastreador() {
       document.getElementById('detalheRisco').textContent = risco;
       document.getElementById('detalheRisco').className = 'detalhe-valor' + (risco === 'BAIXO' ? '' : ' vermelho');
       
-      // Resumo IA
       document.getElementById('resumoTexto').textContent = 
         `Expectativa de velas entre ${min}x e ${max}x, com possibilidade de atingir ${topo}x.`;
       
-      // Análise detalhada
       const tendencias = ['descendo', 'subindo', 'lateral'];
       const tendencia = tendencias[Math.floor(Math.random() * 3)];
       const vies = tendencia === 'descendo' ? 'BAIXA' : tendencia === 'subindo' ? 'ALTA' : 'NEUTRA';
@@ -448,19 +445,16 @@ function ligarRastreador() {
       document.getElementById('viesTexto').textContent = `VIÉS: ${vies}`;
       document.getElementById('viesTexto').className = 'vies' + (vies === 'ALTA' ? ' verde' : '');
       
-      // Botão IA PRONTA
       const btnIa = document.getElementById('btnIaPronta');
       btnIa.className = 'btn-ia-pronta' + (isBom ? '' : ' vermelho');
       btnIa.textContent = isBom ? '🧠 IA PRONTA' : '🚨 FUJA!';
       
-      // Status final
       status.className = 'oraculo-status verde';
       status.innerHTML = `
         ✅ ANÁLISE CONCLUÍDA<br>
         <span class="status-sub">${isBom ? 'Entrada sugerida disponível' : 'FUJA desta entrada!'}</span>
       `;
       
-      // Habilita o botão de desligar (já está disponível)
       const btnRastreador = document.getElementById('btnRastreador');
       btnRastreador.textContent = '🔴 DESLIGAR RASTREADOR';
       btnRastreador.className = 'oraculo-btn-ligar desligado';
@@ -495,7 +489,6 @@ window.desligarRastreador = function() {
   
   document.getElementById('areaResultado').style.display = 'none';
   
-  // Reseta a seleção de vela
   document.querySelectorAll('.vela-btn').forEach(btn => {
     btn.classList.remove('ativo');
   });
