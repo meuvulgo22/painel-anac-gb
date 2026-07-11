@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANAC/GB VIP - IA</title>
+  <title>ANAC/GB VIP</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
   <!-- LOGIN -->
   <div id="login">
     <div class="login-box">
-      <h2>🔐 Login</h2>
+      <h2>Login</h2>
       <input type="email" id="emailLogin" placeholder="Email">
       <input type="password" id="senhaLogin" placeholder="Senha">
       <button onclick="login()">Entrar</button>
@@ -22,7 +22,7 @@
   <!-- CADASTRO -->
   <div id="cadastro" style="display:none;">
     <div class="cadastro-box">
-      <h2>📝 Cadastro</h2>
+      <h2>Cadastro</h2>
       <input type="email" id="emailCadastro" placeholder="Email">
       <input type="password" id="senhaCadastro" placeholder="Senha">
       <button onclick="cadastrar()">Cadastrar</button>
@@ -30,24 +30,13 @@
     </div>
   </div>
 
-  <!-- PAINEL PRINCIPAL -->
+  <!-- PAINEL -->
   <div id="painel" style="display:none;">
-    
-    <!-- AVISO DE DEPÓSITO -->
-    <div id="avisoDeposito" style="background:#1a0a0a; border:2px solid #c62828; border-radius:15px; padding:20px; margin-bottom:20px; text-align:center;">
-      <h2 style="color:#c62828;">🔒 BLOQUEADO</h2>
-      <p style="color:#fff; margin:10px 0;">Faça um depósito para liberar as funções</p>
-      <button onclick="confirmarDeposito()" style="background:#c9a227; color:#000; padding:12px 30px; border:none; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer;">
-        💰 CONFIRMAR DEPÓSITO
-      </button>
-      <p style="color:#888; font-size:12px; margin-top:8px;">Clique aqui APÓS realizar o depósito</p>
-    </div>
-
     <div class="topo">
-      <h1>🤖 ANAC/GB IA</h1>
-      <button id="btnTigre" onclick="gerar('Tigre')">🐯 GERAR TIGRE</button>
-      <button id="btnTouro" onclick="gerar('Touro')">🐂 GERAR TOURO</button>
-      <button id="btnAviator" onclick="gerar('Aviator')">✈️ GERAR AVIATOR</button>
+      <h1>ANAC/GB</h1>
+      <button onclick="gerar('Tigre')">GERAR TIGRE</button>
+      <button onclick="gerar('Touro')">GERAR TOURO</button>
+      <button onclick="gerar('Aviator')">GERAR AVIATOR</button>
       <div id="timer"></div>
       <div id="contadorGlobal" style="margin-top:8px;color:#c9a227;font-weight:bold;"></div>
     </div>
@@ -65,80 +54,110 @@
       <div style="background:#222; border-radius:10px; overflow:hidden;">
         <div id="barraProb" style="height:20px; width:0%; background:lime; transition:1s;"></div>
       </div>
-      <p id="rtp">🎯 IA: Aprendendo...</p>
+      <p id="rtp">RTP: 0%</p>
       <p id="textoProb"></p>
     </div>
 
     <div id="avaliacao">
       <div class="avaliacao-botoes">
-        <button id="btnGreen" class="av-btn green" disabled>DEU GREEN ✅</button>
-        <button id="btnRed" class="av-btn red" disabled>DEU RED ❌</button>
+        <button id="btnGreen" class="av-btn green">DEU GREEN ✅</button>
+        <button id="btnRed" class="av-btn red">DEU RED ❌</button>
       </div>
       <div id="resultadoAvaliacao"></div>
       <div id="tipoEnviado"></div>
     </div>
 
-    <!-- AVIATOR COM IA -->
+    <!-- ===== AVIATOR ESTILO ORÁCULO ===== -->
     <div id="aviatorVisual" style="display:none;">
-      <div class="rastreador-container">
+      <div class="oraculo-container">
         
-        <h2 class="rastreador-titulo">🧠 IA ANALISANDO MERCADO</h2>
+        <!-- Título -->
+        <h2 class="oraculo-titulo">🎯 ESCOLHA A VELA A RASTREAR ABAIXO</h2>
         
+        <!-- Botões 3X 10X 30X -->
         <div class="velas-botoes">
           <button class="vela-btn" data-vela="3X" onclick="selecionarVela('3X')">3X</button>
           <button class="vela-btn" data-vela="10X" onclick="selecionarVela('10X')">10X</button>
           <button class="vela-btn" data-vela="30X" onclick="selecionarVela('30X')">30X</button>
         </div>
         
-        <button id="btnRastreador" class="rastreador-btn" onclick="ligarRastreador()">
+        <!-- Botão Ligar/Desligar (alterna) -->
+        <button id="btnRastreador" class="oraculo-btn-ligar" onclick="alternarRastreador()">
           ▶️ LIGAR RASTREADOR
         </button>
         
-        <div id="statusRastreador" class="status-rastreador">
-          🔴 IA AGUARDANDO<br>
-          <span class="status-sub">Escolha a vela e ative a IA para análise</span>
+        <!-- Status -->
+        <div id="statusRastreador" class="oraculo-status">
+          🔴 RASTREADOR AGUARDANDO<br>
+          <span class="status-sub">Escolha a vela acima e toque em ligar rastreador para iniciar a leitura.</span>
         </div>
 
-        <div class="ultimos-acertos">
-          <h3>📈 APRENDIZADO DA IA</h3>
+        <!-- Últimos Acertos -->
+        <div class="oraculo-acertos">
+          <h3>📈 ÚLTIMOS ACERTOS</h3>
           <div id="listaAcertos" class="lista-acertos">
-            <span class="acerto-item">🤖 Treinando...</span>
+            <span class="acerto-item">30X 59%</span>
+            <span class="acerto-item">30X 61%</span>
+            <span class="acerto-item">10X 62%</span>
           </div>
           <div id="detalhesAcertos" class="detalhes-acertos">
-            <span id="taxaAcerto">Taxa: 0%</span>
-            <span id="totalSinais">Sinais: 0</span>
+            <span>31.76x 13:36</span>
+            <span>1296.87x 00:30</span>
+            <span>16.24x 23:47</span>
           </div>
         </div>
 
-        <div id="areaIA" style="display:none;" class="area-ia">
-          <div class="ia-status">🧠 IA LENDO O MERCADO EM TEMPO REAL...</div>
-          <div class="ia-descricao" id="iaDescricao">
-            Analisando padrões históricos e ajustando estratégia...
-          </div>
-          <div class="ia-passos" id="iaPassos">
-            <span>📊 Lendo últimas 30 velas</span>
-            <span>🎯 Projetando entrada ideal</span>
-          </div>
+        <!-- Área de Resultado (escondida até ligar) -->
+        <div id="areaResultado" style="display:none;">
           
+          <!-- Chances de sucesso -->
           <div class="chances-sucesso">
-            <span>🤖 Confiança da IA</span>
-            <div class="porcentagem-grande" id="porcentagemSucesso">0%</div>
+            <span>Chances de sucesso</span>
+            <div class="porcentagem-grande" id="porcentagemSucesso">63%</div>
           </div>
           
-          <div class="entrada-sugerida">
-            <div class="entrada-titulo">🎯 ENTRADA SUGERIDA PELA IA</div>
-            <div class="entrada-visao">VISÃO DA IA</div>
-            <div class="entrada-analise" id="entradaAnalise">
+          <!-- Entrada Sugerida -->
+          <div class="entrada-sugerida" id="entradaSugerida">
+            <div class="entrada-titulo" id="statusEntrada">🎯 ENTRADA SUGERIDA, ALTA CHANCE DE SUCESSO</div>
+            <div class="entrada-visao">VISÃO DA ENTRADA</div>
+            <div class="entrada-analise">
               Análise completa da entrada<br>
-              Entre <strong id="rangeMin">1.00</strong>x e <strong id="rangeMax">2.80</strong>x, podendo chegar a <strong id="rangeTopo">11.91</strong>x no prazo de 60s.
+              Entre <strong id="rangeMin">1.17</strong>x e <strong id="rangeMax">2.38</strong>x, podendo chegar a <strong id="rangeTopo">2.73</strong>x no prazo de 60s.
             </div>
           </div>
           
-          <div id="iaStats" style="background:#0a0a0a; border-radius:10px; padding:12px; margin-bottom:15px; border:1px solid #333; font-size:12px; color:#888;">
-            <span id="iaAprendizado">🧠 IA em modo de aprendizado...</span>
+          <!-- Botões IA PRONTA + DESLIGAR -->
+          <div class="ia-acoes">
+            <button class="btn-ia-pronta" disabled>🧠 IA PRONTA</button>
+            <button class="btn-desligar" onclick="desligarRastreador()">DESLIGAR</button>
           </div>
-          
-          <button class="btn-desligar" onclick="desligarRastreador()">🔴 DESLIGAR IA</button>
+
+          <!-- Detalhes da Análise -->
+          <div class="detalhes-analise">
+            <div class="detalhe-item">
+              <span class="detalhe-label">PROBABILIDADE</span>
+              <span class="detalhe-valor" id="detalheProb">63%</span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">RISCO</span>
+              <span class="detalhe-valor" id="detalheRisco">BAIXO</span>
+            </div>
+          </div>
+
+          <div class="resumo-ia">
+            <span class="resumo-label">RESUMO IA</span>
+            <p id="resumoTexto">Expectativa de velas entre 1.17x e 2.38x, com possibilidade de atingir 2.73x.</p>
+          </div>
+
+          <div class="analise-detalhada">
+            <span class="analise-label">ANÁLISE DETALHADA</span>
+            <p id="analiseTexto">A tendência atual é de baixa, com a maioria das velas abaixo do multiplicador alvo de 3x.</p>
+            <div class="tendencias">
+              <span class="tendencia" id="tendenciaTexto">📉 TENDÊNCIA: DESCENDO</span>
+              <span class="vies" id="viesTexto">VIÉS: BAIXA</span>
+            </div>
+          </div>
+
         </div>
 
       </div>
